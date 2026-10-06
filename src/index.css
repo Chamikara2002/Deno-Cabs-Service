@@ -1,0 +1,97 @@
+/* Global Design System & Variables */
+:root {
+  --deno-bg-dark: #080d1a;
+  --deno-bg-light: #f8fafc;
+  --deno-bg-card: #ffffff;
+  --deno-bg-surface: #ffffff;
+  --deno-bg-navy: #0b172a;
+  --deno-bg-navy-light: #1e293b;
+  
+  --deno-gold-primary: #ffb800;
+  --deno-gold-hover: #e5a600;
+  --deno-gold-glow: rgba(255, 184, 0, 0.25);
+  
+  --deno-text-white: #ffffff;
+  --deno-text-muted: #64748b;
+  --deno-text-dark: #0f172a;
+  --deno-border-subtle: #e2e8f0;
+  --deno-border-gold: rgba(255, 184, 0, 0.4);
+  
+  --deno-success: #10b981;
+  --deno-danger: #ef4444;
+  --deno-warning: #f59e0b;
+  
+  --deno-font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --deno-font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  --deno-radius-sm: 6px;
+  --deno-radius-md: 12px;
+  --deno-radius-lg: 20px;
+  --deno-radius-pill: 9999px;
+  
+  --deno-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --deno-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.12);
+  --deno-shadow-gold: 0 8px 24px rgba(255, 184, 0, 0.25);
+  --deno-transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--deno-font-body);
+  background-color: var(--deno-bg-light);
+  color: var(--deno-text-dark);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Flex Wrapper to guarantee Footer is always positioned & visible */
+.deno-app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.deno-app-main {
+  flex: 1 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--deno-font-heading);
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--deno-bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--deno-gold-primary);
+}

@@ -1,0 +1,394 @@
+/* About Page CSS - Responsive Design */
+.about-page-container {
+  width: 100%;
+  background: #f8fafc;
+}
+
+.about-section-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.about-section-title {
+  font-family: var(--deno-font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.about-section-subtitle {
+  font-size: 0.95rem;
+  color: #64748b;
+  max-width: 650px;
+}
+
+.about-section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-section-header .about-section-subtitle {
+  margin: 0 auto;
+}
+
+/* 1. HERO */
+.about-hero {
+  position: relative;
+  width: 100%;
+  height: 380px;
+  background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1600');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ffffff;
+  padding: 0 24px;
+}
+
+.about-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(11, 23, 42, 0.7) 0%, rgba(11, 23, 42, 0.85) 100%);
+  z-index: 1;
+}
+
+.about-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+}
+
+.about-hero-title {
+  font-family: var(--deno-font-heading);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 14px;
+}
+
+.about-hero-subtitle {
+  font-size: 1.05rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+/* 2. THE JOURNEY TO PREMIUM */
+.about-journey-section {
+  padding: 60px 0;
+  background: #ffffff;
+}
+
+.about-journey-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.about-text-paragraph {
+  font-size: 0.92rem;
+  color: #475569;
+  line-height: 1.7;
+  margin-top: 14px;
+}
+
+.video-card-preview {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  height: 320px;
+}
+
+.video-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-button-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.play-button-overlay:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* 3. TIMELINE */
+.about-timeline-section {
+  padding: 60px 0;
+  background: #f1f5f9;
+}
+
+.about-timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.timeline-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px 20px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timeline-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.timeline-icon-box.yellow {
+  background: #ffb800;
+}
+
+.timeline-year {
+  font-family: var(--deno-font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.timeline-desc {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* 4. CORE VALUES */
+.about-values-section {
+  padding: 60px 0;
+  background: #ffffff;
+}
+
+.about-values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.value-card {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 24px 20px;
+  border: 1px solid #e2e8f0;
+}
+
+.value-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #fffbeb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.value-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.value-card p {
+  font-size: 0.82rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* 5. CHAUFFEURS */
+.about-chauffeurs-section {
+  padding: 60px 0;
+  background: #f8fafc;
+}
+
+.about-chauffeurs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.chauffeur-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
+.chauffeur-img-wrapper {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+}
+
+.chauffeur-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chauffeur-overlay-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  background: linear-gradient(180deg, transparent 0%, rgba(11, 23, 42, 0.85) 100%);
+  color: #ffffff;
+}
+
+.chauffeur-overlay-badge strong {
+  display: block;
+  font-size: 1.1rem;
+}
+
+.chauffeur-overlay-badge span {
+  font-size: 0.75rem;
+  color: #ffb800;
+  font-weight: 600;
+}
+
+.chauffeur-quote-box {
+  padding: 20px;
+}
+
+.chauffeur-quote-box p {
+  font-size: 0.85rem;
+  color: #475569;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* 6. TRUSTED BY INDUSTRY LEADERS */
+.about-trust-section {
+  padding: 40px 0;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+}
+
+.trust-kicker {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+
+.trust-logos-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.trust-logo {
+  font-family: var(--deno-font-heading);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+/* 7. CTA BANNER */
+.about-cta-section {
+  padding: 60px 0;
+  background: #f8fafc;
+}
+
+.about-cta-box {
+  background: #0b172a;
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.about-cta-box h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.about-cta-box p {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  margin-bottom: 24px;
+}
+
+.about-cta-btn {
+  display: inline-block;
+  background: #ffb800;
+  color: #0b172a;
+  font-weight: 700;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1024px) {
+  .about-journey-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  .about-timeline-grid, .about-values-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-journey-grid, .about-chauffeurs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero-title {
+    font-size: 1.8rem;
+  }
+  .about-timeline-grid, .about-values-grid {
+    grid-template-columns: 1fr;
+  }
+  .trust-logos-row {
+    gap: 24px;
+  }
+}

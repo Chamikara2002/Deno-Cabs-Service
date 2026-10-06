@@ -1,0 +1,128 @@
+/* Unique CSS Class names for Login Alert Modal */
+.deno-login-alert-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(5, 10, 24, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: denoAlertFadeIn 0.25s ease-out;
+}
+
+@keyframes denoAlertFadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.deno-login-alert-card {
+  background: linear-gradient(145deg, #0e172a 0%, #152238 100%);
+  border: 1px solid rgba(245, 183, 0, 0.3);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 183, 0, 0.15);
+  border-radius: 20px;
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  text-align: center;
+}
+
+.deno-login-alert-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--deno-text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--deno-transition);
+}
+
+.deno-login-alert-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.deno-login-alert-icon-wrapper {
+  width: 68px;
+  height: 68px;
+  background: rgba(245, 183, 0, 0.12);
+  border: 1px solid rgba(245, 183, 0, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.deno-login-alert-icon {
+  color: var(--deno-gold-primary);
+}
+
+.deno-login-alert-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.deno-login-alert-message {
+  color: #cbd5e1;
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+
+.deno-login-alert-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.deno-login-alert-cancel-btn {
+  flex: 1;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--deno-transition);
+}
+
+.deno-login-alert-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.deno-login-alert-ok-btn {
+  flex: 1.2;
+  padding: 12px;
+  background: linear-gradient(135deg, #f5b700 0%, #e0a700 100%);
+  color: #090f1d;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(245, 183, 0, 0.3);
+  transition: var(--deno-transition);
+}
+
+.deno-login-alert-ok-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 183, 0, 0.45);
+}

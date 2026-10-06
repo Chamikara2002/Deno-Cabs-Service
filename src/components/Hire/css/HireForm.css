@@ -1,0 +1,455 @@
+/* Unique CSS Class names for HireForm */
+.hire-form-section {
+  padding: 50px 0 70px;
+  background: #080d1a;
+}
+
+.hire-form-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hire-form-layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 992px) {
+  .hire-form-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hire-form-card {
+  background: #0e172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: var(--deno-shadow-card);
+}
+
+.hire-form-header {
+  margin-bottom: 24px;
+}
+
+.hire-form-header h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.hire-form-header p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.hire-guest-notice {
+  background: rgba(245, 183, 0, 0.1);
+  border: 1px solid rgba(245, 183, 0, 0.35);
+  color: #fbbf24;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  transition: var(--deno-transition);
+}
+
+.hire-guest-notice:hover {
+  background: rgba(245, 183, 0, 0.18);
+}
+
+.hire-notice-icon {
+  flex-shrink: 0;
+  color: var(--deno-gold-primary);
+}
+
+.hire-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 576px) {
+  .hire-form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hire-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hire-input-group label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  letter-spacing: 0.05em;
+}
+
+.hire-input-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.hire-field-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--deno-gold-primary);
+}
+
+.hire-input-field input {
+  width: 100%;
+  background: #152238;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px 12px 42px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  transition: var(--deno-transition);
+}
+
+.hire-input-field input:focus {
+  border-color: var(--deno-gold-primary);
+  box-shadow: 0 0 0 3px rgba(245, 183, 0, 0.15);
+}
+
+.hire-select-field,
+.hire-simple-input {
+  width: 100%;
+  background: #152238;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  transition: var(--deno-transition);
+}
+
+.hire-select-field option {
+  background: #0e172a;
+  color: #ffffff;
+}
+
+.hire-vehicle-picker-section {
+  margin: 24px 0 28px;
+}
+
+.hire-picker-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.hire-vehicle-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .hire-vehicle-options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hire-vehicle-card-choice {
+  background: #131d33;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: var(--deno-transition);
+}
+
+.hire-vehicle-card-choice:hover {
+  border-color: rgba(245, 183, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.hire-vehicle-card-choice.active {
+  border-color: var(--deno-gold-primary);
+  background: rgba(245, 183, 0, 0.08);
+  box-shadow: 0 4px 15px rgba(245, 183, 0, 0.15);
+}
+
+.hire-choice-img {
+  width: 64px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.hire-choice-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.hire-choice-cat {
+  font-size: 0.65rem;
+  color: var(--deno-gold-primary);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.hire-choice-name {
+  font-size: 0.85rem;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.hire-choice-rate {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.hire-form-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #f5b700 0%, #e0a700 100%);
+  color: #0b1329;
+  font-weight: 800;
+  font-size: 1.05rem;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: var(--deno-shadow-gold);
+  transition: var(--deno-transition);
+}
+
+.hire-form-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(245, 183, 0, 0.4);
+}
+
+/* Right Summary */
+.hire-summary-card {
+  background: #0e172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 28px;
+  height: fit-content;
+}
+
+.hire-summary-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+.hire-summary-vehicle-preview {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  background: #141f36;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.hire-preview-img {
+  width: 80px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.hire-preview-text strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.hire-badge-pill {
+  font-size: 0.65rem;
+  background: rgba(245, 183, 0, 0.15);
+  color: var(--deno-gold-primary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.hire-summary-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.hire-summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: #94a3b8;
+}
+
+.hire-summary-row strong {
+  color: #ffffff;
+}
+
+.hire-free-text {
+  color: var(--deno-success) !important;
+}
+
+.hire-summary-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 6px 0;
+}
+
+.hire-total-row span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.hire-total-amount {
+  font-size: 1.3rem;
+  color: var(--deno-gold-primary) !important;
+  font-weight: 800;
+}
+
+.hire-summary-trust-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.hire-perk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+/* Success Card */
+.hire-success-card {
+  background: #0e172a;
+  border: 1px solid var(--deno-gold-primary);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.hire-success-icon-badge {
+  width: 80px;
+  height: 80px;
+  background: rgba(16, 185, 129, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.hire-success-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.hire-success-desc {
+  color: #94a3b8;
+  margin-bottom: 30px;
+}
+
+.hire-success-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: #141f36;
+  padding: 20px;
+  border-radius: 14px;
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.hire-success-detail-item span {
+  display: block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.hire-success-detail-item strong {
+  font-size: 0.92rem;
+  color: #ffffff;
+}
+
+.hire-success-fare {
+  color: var(--deno-gold-primary) !important;
+  font-size: 1.1rem !important;
+}
+
+.hire-success-actions-row {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hire-success-track-btn {
+  background: var(--deno-gold-primary);
+  color: #0b1329;
+  font-weight: 800;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(245, 183, 0, 0.3);
+}
+
+.hire-success-track-btn:hover {
+  background: #e6a600;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 183, 0, 0.4);
+}
+
+.hire-success-reset-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hire-success-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}

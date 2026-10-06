@@ -1,0 +1,146 @@
+/* Footer CSS - Dark Navy Theme & Responsive Design */
+.deno-footer-section {
+  background: #0b172a;
+  color: #ffffff;
+  padding: 60px 0 24px;
+  width: 100%;
+  margin-top: auto;
+}
+
+.deno-footer-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.deno-footer-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.deno-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.deno-footer-emblem {
+  display: flex;
+  align-items: center;
+}
+
+.deno-footer-about {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-width: 360px;
+}
+
+.deno-footer-title {
+  font-family: var(--deno-font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.deno-footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deno-footer-links a {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.deno-footer-links a:hover {
+  color: #ffb800;
+}
+
+.deno-footer-social-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.deno-footer-social-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--deno-transition);
+}
+
+.deno-footer-social-btn:hover {
+  background: #ffb800;
+  color: #0b172a;
+  border-color: #ffb800;
+  transform: translateY(-2px);
+}
+
+.deno-footer-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.deno-footer-contact-block strong {
+  display: block;
+  font-size: 0.88rem;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.deno-footer-contact-block p {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.deno-footer-copyright {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .deno-footer-grid {
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .deno-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .deno-footer-section {
+    padding: 40px 0 20px;
+  }
+  .deno-footer-container {
+    padding: 0 16px;
+  }
+  .deno-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}

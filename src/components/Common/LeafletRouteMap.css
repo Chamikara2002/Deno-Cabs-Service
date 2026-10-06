@@ -1,0 +1,313 @@
+/* Leaflet OpenStreetMap Route Map Styles */
+.leaflet-route-map-root {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.leaflet-route-map-root.dark-theme {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  background: #0b172a;
+}
+
+/* Dark theme tiles filter for pure OpenStreetMap without API keys */
+.leaflet-route-map-root.dark-theme .leaflet-tile-pane {
+  filter: brightness(0.72) invert(0.92) contrast(1.2) hue-rotate(190deg) saturate(0.45);
+}
+
+.leaflet-map-canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Floating Overlay Header */
+.leaflet-map-overlay-header {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 6px 12px;
+  border-radius: 10px;
+  z-index: 500;
+  color: #ffffff;
+  pointer-events: none;
+}
+
+.overlay-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.live-gps-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.pulsing-green-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  animation: pulseDot 1.5s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+.map-route-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.overlay-dist-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffb800;
+  color: #0b172a;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.overlay-dist-pill strong {
+  font-weight: 800;
+}
+
+/* Interactive Selecting Mode Banner */
+.leaflet-selecting-banner {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.92);
+  color: #ffffff;
+  border: 1px solid #ffb800;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 500;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: bounceBanner 2s infinite ease-in-out;
+}
+
+@keyframes bounceBanner {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -3px); }
+}
+
+/* Floating Controls */
+.leaflet-custom-controls {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 500;
+}
+
+.map-ctrl-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s;
+}
+
+.dark-theme .map-ctrl-btn {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+}
+
+.map-ctrl-btn:hover {
+  background: #ffb800;
+  color: #0b172a;
+  border-color: #ffb800;
+}
+
+/* Custom Marker Pins */
+.custom-leaflet-pin-wrapper {
+  background: transparent !important;
+  border: none !important;
+}
+
+.leaflet-pin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pin-body {
+  width: 26px;
+  height: 26px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+
+.green-body {
+  background: #10b981;
+}
+
+.red-body {
+  background: #ef4444;
+}
+
+.gold-body {
+  background: #ffb800;
+  border-radius: 50%;
+  transform: none;
+}
+
+.pin-dot-inner {
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.vehicle-icon-symbol {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.pin-pulse {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  z-index: 1;
+  animation: markerPulse 1.8s infinite ease-out;
+}
+
+.green-pulse {
+  background: rgba(16, 185, 129, 0.5);
+}
+
+.red-pulse {
+  background: rgba(239, 68, 68, 0.5);
+}
+
+.gold-pulse {
+  background: rgba(255, 184, 0, 0.6);
+}
+
+@keyframes markerPulse {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.pin-label-pill {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.pickup-label {
+  background: #0f172a;
+  border: 1px solid #10b981;
+}
+
+.dropoff-label {
+  background: #0f172a;
+  border: 1px solid #ef4444;
+}
+
+.vehicle-label {
+  background: #0f172a;
+  border: 1px solid #ffb800;
+  color: #ffb800;
+}
+
+/* Map Popups */
+.leaflet-popup-content-wrapper {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaflet-popup-tip {
+  background: #0f172a !important;
+}
+
+.map-popup-card strong {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 2px;
+}
+
+.map-popup-card p {
+  font-size: 0.78rem;
+  color: #e2e8f0;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.map-popup-card small {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}

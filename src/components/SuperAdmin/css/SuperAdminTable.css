@@ -1,0 +1,543 @@
+/* Super Admin Dispatch Table Section */
+.deno-admin-dispatch-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Control Bar (Tabs + Search + Buttons) */
+.deno-admin-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(13, 21, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px 16px;
+  backdrop-filter: blur(10px);
+  flex-wrap: wrap;
+}
+
+/* Tabs */
+.deno-admin-tabs-group {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 4px;
+  gap: 2px;
+}
+
+.deno-status-tab-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  transition: all 0.2s ease;
+}
+
+.deno-status-tab-btn:hover {
+  color: #ffffff;
+}
+
+.deno-status-tab-btn.active {
+  background: #1e293b;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Search Box */
+.deno-admin-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 400px;
+  min-width: 220px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.deno-admin-search-input {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 36px 8px 38px;
+  color: #ffffff;
+  font-size: 0.86rem;
+  transition: all 0.2s;
+}
+
+.deno-admin-search-input:focus {
+  border-color: #ffb800;
+  box-shadow: 0 0 0 2px rgba(255, 184, 0, 0.2);
+  background: #0f172a;
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.clear-search-btn:hover {
+  color: #ffffff;
+}
+
+/* Action Buttons */
+.deno-admin-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.deno-btn-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.deno-btn-control:hover {
+  background: #1e293b;
+  color: #ffffff;
+  border-color: rgba(255, 184, 0, 0.3);
+}
+
+.deno-btn-simulate-hire {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffb800;
+  border: 1px solid #ffb800;
+  color: #0b172a;
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(255, 184, 0, 0.3);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.deno-btn-simulate-hire:hover {
+  background: #e5a600;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(255, 184, 0, 0.45);
+}
+
+/* Table Container */
+.deno-admin-table-container {
+  background: rgba(13, 21, 39, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.deno-admin-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.deno-dispatch-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 0.86rem;
+}
+
+/* Table Head */
+.deno-dispatch-table thead tr {
+  background: rgba(15, 23, 42, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.deno-dispatch-table th {
+  padding: 16px 18px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Table Rows & Cells */
+.deno-table-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color 0.15s ease;
+}
+
+.deno-table-row:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.deno-dispatch-table td {
+  padding: 16px 18px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 1. Booking Ref */
+.booking-ref-gold {
+  color: #ffb800;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+/* 2. Customer & Corporate */
+.cell-customer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.customer-name {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.corporate-name {
+  color: #94a3b8;
+  font-size: 0.78rem;
+}
+
+/* 3. Pickup Route */
+.cell-route-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 280px;
+}
+
+.pickup-text {
+  color: #e2e8f0;
+  font-weight: 500;
+  font-size: 0.86rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropoff-text {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.route-arrow-icon {
+  font-size: 0.75rem;
+}
+
+/* 4. Vehicle Model */
+.cell-vehicle-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vehicle-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.vehicle-plate {
+  color: #64748b;
+  font-size: 0.76rem;
+  font-family: monospace;
+  letter-spacing: 0.04em;
+}
+
+/* 5. Schedule Date */
+.cell-date-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.date-day {
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+
+.date-time {
+  color: #64748b;
+  font-size: 0.76rem;
+}
+
+/* 6. Total Amount */
+.cell-amount-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.amount-lkr {
+  color: #ffb800;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.01em;
+}
+
+.amount-usd {
+  color: #38bdf8;
+  font-size: 0.76rem;
+}
+
+/* 7. Status Pills */
+.deno-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-pending {
+  background: rgba(255, 184, 0, 0.1);
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  color: #ffb800;
+}
+
+.dot-pending {
+  background: #ffb800;
+  box-shadow: 0 0 6px #ffb800;
+}
+
+.status-confirmed {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.dot-confirmed {
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+}
+
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+/* 8. Action Explore Button */
+.deno-explore-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  color: #ffb800;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.deno-explore-btn:hover {
+  background: #ffb800;
+  color: #0b172a;
+  box-shadow: 0 0 12px rgba(255, 184, 0, 0.4);
+  transform: translateX(2px);
+}
+
+.explore-arrow {
+  transition: transform 0.2s;
+}
+
+.deno-explore-btn:hover .explore-arrow {
+  transform: translateX(3px);
+}
+
+/* Empty State */
+.deno-empty-table-cell {
+  text-align: center;
+  padding: 40px !important;
+}
+
+.empty-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #94a3b8;
+}
+
+.empty-reset-btn {
+  background: rgba(255, 184, 0, 0.15);
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  color: #ffb800;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+/* Table Footer with Pagination */
+.deno-admin-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(15, 23, 42, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.deno-entries-counter {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.deno-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.pagination-btn.num-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-btn.num-btn.active {
+  background: #ffb800;
+  color: #0b172a;
+  border-color: #ffb800;
+  font-weight: 800;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .deno-admin-control-bar {
+    gap: 12px;
+  }
+
+  .deno-admin-search-wrapper {
+    max-width: 100%;
+    order: 3;
+    width: 100%;
+  }
+
+  .deno-admin-action-buttons {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .deno-admin-control-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .deno-admin-tabs-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .deno-status-tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 0.78rem;
+  }
+
+  .deno-admin-action-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .deno-btn-control, .deno-btn-simulate-hire {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .deno-btn-control span,
+  .deno-btn-simulate-hire span {
+    font-size: 0.78rem;
+  }
+
+  .deno-admin-table-footer {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+}

@@ -1,0 +1,1149 @@
+/* Unique CSS Class names for Auth Modal - Fully Responsive (1024px, Laptop, Mobile) */
+.deno-auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(4, 8, 20, 0.88);
+  backdrop-filter: blur(10px);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.deno-auth-modal-wrapper {
+  background-color: #0b1329;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+  max-height: 88vh;
+}
+
+/* Left Side Visual Banner */
+.deno-auth-modal-visual {
+  background: linear-gradient(180deg, rgba(8, 13, 26, 0.6) 0%, rgba(14, 23, 42, 0.95) 100%),
+              url('https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&q=80&w=1000');
+  background-size: cover;
+  background-position: center;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.deno-auth-visual-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 183, 0, 0.4);
+  padding: 6px 14px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  width: fit-content;
+}
+
+.deno-auth-badge-car {
+  font-size: 1.1rem;
+}
+
+.deno-auth-badge-text {
+  font-weight: 800;
+  color: #fff;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.deno-auth-badge-sub {
+  background: var(--deno-gold-primary);
+  color: #0b1329;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.deno-auth-tag {
+  display: inline-block;
+  background: rgba(245, 183, 0, 0.15);
+  color: var(--deno-gold-primary);
+  border: 1px solid rgba(245, 183, 0, 0.3);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.deno-auth-visual-title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.deno-auth-visual-desc {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.deno-auth-visual-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+
+.deno-auth-stat-item strong {
+  display: block;
+  font-size: 1.15rem;
+  color: var(--deno-gold-primary);
+  font-weight: 800;
+}
+
+.deno-auth-stat-item span {
+  font-size: 0.7rem;
+  color: #cbd5e1;
+}
+
+/* Right Side Form */
+.deno-auth-modal-form-container {
+  padding: 32px 36px;
+  position: relative;
+  overflow-y: auto;
+  max-height: 88vh;
+  background: #090f1e;
+}
+
+.deno-auth-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--deno-transition);
+  z-index: 10;
+}
+
+.deno-auth-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+/* Tabs */
+.deno-auth-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.deno-auth-tab {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: var(--deno-transition);
+}
+
+.deno-auth-tab.active {
+  background: var(--deno-gold-primary);
+  color: #0b1329;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(245, 183, 0, 0.25);
+}
+
+.deno-auth-error-banner {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ================= UNREGISTERED CUSTOMER ALERT HINT CARD ================= */
+.deno-not-registered-hint-card {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(245, 158, 11, 0.15);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: shakeAlert 0.35s ease-in-out;
+}
+
+@keyframes shakeAlert {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  60% { transform: translateX(5px); }
+}
+
+.hint-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hint-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hint-title {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #fbbf24;
+  margin-bottom: 2px;
+}
+
+.hint-sub {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+.hint-sub strong {
+  color: #38bdf8;
+  font-family: monospace;
+}
+
+.hint-action-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed rgba(245, 158, 11, 0.3);
+}
+
+.hint-lead-text {
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+.deno-hint-register-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffb800;
+  color: #0b172a;
+  font-weight: 800;
+  font-size: 0.86rem;
+  padding: 9px 16px;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.3);
+}
+
+.deno-hint-register-btn:hover {
+  background: #e5a600;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 184, 0, 0.45);
+}
+
+/* Success Registration Screen */
+.deno-auth-success-screen {
+  padding: 40px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.success-icon-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  animation: bounceIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.deno-auth-success-screen h3 {
+  font-size: 1.3rem;
+  color: #ffffff;
+}
+
+.deno-auth-success-screen p {
+  font-size: 0.86rem;
+  color: #94a3b8;
+}
+
+.deno-auth-heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.deno-auth-subheading {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}
+
+.deno-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.deno-auth-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.deno-auth-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.deno-auth-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.deno-auth-field-group label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  letter-spacing: 0.05em;
+}
+
+.deno-auth-required {
+  font-size: 0.68rem;
+  color: var(--deno-gold-primary);
+}
+
+.deno-auth-forgot-link {
+  font-size: 0.72rem;
+  color: var(--deno-gold-primary);
+  font-weight: 600;
+}
+
+.deno-auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  transition: var(--deno-transition);
+}
+
+.deno-auth-input-wrapper:focus-within {
+  border-color: var(--deno-gold-primary);
+  box-shadow: 0 0 0 3px rgba(245, 183, 0, 0.15);
+}
+
+.deno-auth-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #64748b;
+}
+
+.deno-auth-phone-prefix {
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--deno-gold-primary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding-right: 8px;
+}
+
+.deno-auth-input-wrapper input {
+  width: 100%;
+  background: transparent;
+  padding: 10px 12px 10px 38px;
+  color: #ffffff;
+  font-size: 0.88rem;
+}
+
+.deno-auth-phone-prefix + input {
+  padding-left: 10px;
+}
+
+.deno-auth-eye-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+}
+
+.deno-auth-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.deno-auth-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.deno-auth-checkbox-label input[type="checkbox"] {
+  accent-color: var(--deno-gold-primary);
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+}
+
+.deno-auth-ssl-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--deno-success);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.deno-auth-submit-btn {
+  background: linear-gradient(135deg, #f5b700 0%, #e0a700 100%);
+  color: #0b1329;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(245, 183, 0, 0.3);
+  transition: var(--deno-transition);
+  margin-top: 4px;
+}
+
+.deno-auth-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 183, 0, 0.45);
+}
+
+.deno-auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 10px 0 4px;
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.deno-auth-divider::before,
+.deno-auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.deno-auth-divider span {
+  padding: 0 10px;
+}
+
+.deno-auth-social-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deno-auth-social-btns.single-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.deno-auth-social-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.deno-auth-social-btn.google-full-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+}
+
+.deno-auth-social-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.deno-register-google-row {
+  margin-bottom: 8px;
+}
+
+/* Google Account Connected Badge in Register View */
+.deno-google-connected-badge {
+  background: rgba(66, 133, 244, 0.12);
+  border: 1px solid rgba(66, 133, 244, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.deno-google-connected-badge strong {
+  display: block;
+  color: #60a5fa;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.deno-google-connected-badge span {
+  display: block;
+  color: #94a3b8;
+  font-size: 0.74rem;
+}
+
+/* ================= GOOGLE CHOOSER OVERLAY & DIALOG ================= */
+.deno-google-chooser-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.deno-google-chooser-dialog {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(20px) scale(0.96); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.google-chooser-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+.google-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.google-title-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.google-close-btn {
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.google-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.google-chooser-intro .google-subtext {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.google-chooser-intro .google-subtext strong {
+  color: var(--deno-gold-primary);
+}
+
+.google-custom-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.google-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 0 12px;
+  transition: all 0.2s ease;
+}
+
+.google-input-box:focus-within {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.25);
+}
+
+.google-input-icon {
+  color: #94a3b8;
+  margin-right: 8px;
+}
+
+.google-input-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 12px 0;
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.google-proceed-btn {
+  background: #4285f4;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(66, 133, 244, 0.35);
+}
+
+.google-proceed-btn:hover {
+  background: #3367d6;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(66, 133, 244, 0.5);
+}
+
+.google-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: #64748b;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.deno-auth-switch-text {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.deno-auth-link {
+  color: var(--deno-gold-primary);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Tier selection */
+.deno-auth-tier-selection {
+  margin: 2px 0 6px;
+}
+
+.deno-auth-section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.deno-auth-tier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.deno-auth-tier-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--deno-transition);
+}
+
+.deno-auth-tier-card.selected {
+  border-color: var(--deno-gold-primary);
+  background: rgba(245, 183, 0, 0.08);
+}
+
+.deno-auth-radio-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #64748b;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.deno-auth-tier-card.selected .deno-auth-radio-indicator {
+  border-color: var(--deno-gold-primary);
+  background: var(--deno-gold-primary);
+}
+
+.deno-auth-tier-card strong {
+  display: block;
+  font-size: 0.78rem;
+  color: #fff;
+}
+
+.deno-auth-tier-card p {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+/* ================= REGISTRATION VERIFIED SUCCESS BANNER ON LOGIN ================= */
+.deno-reg-success-banner {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.25) 100%);
+  border: 1.5px solid rgba(16, 185, 129, 0.5);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #a7f3d0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.4;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.deno-auth-otp-badge {
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* ================= 4-DIGIT OTP VERIFICATION MODAL ================= */
+.deno-otp-verify-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(3, 7, 18, 0.88);
+  backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.deno-otp-verify-dialog {
+  background: #0b1329;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 22px;
+  width: 100%;
+  max-width: 460px;
+  padding: 32px 28px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(245, 183, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.deno-otp-dialog-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.deno-otp-dialog-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.otp-modal-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.otp-shield-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(245, 183, 0, 0.2) 0%, rgba(245, 183, 0, 0.05) 100%);
+  border: 1.5px solid rgba(245, 183, 0, 0.4);
+  color: var(--deno-gold-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  box-shadow: 0 8px 20px rgba(245, 183, 0, 0.2);
+}
+
+.otp-modal-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.otp-modal-sub {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  max-width: 380px;
+}
+
+.otp-modal-sub strong {
+  color: #f1f5f9;
+}
+
+.otp-recipient-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.otp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.otp-tag.phone-tag {
+  color: #34d399;
+}
+
+.otp-modal-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: shakeAlert 0.35s ease;
+}
+
+.otp-digits-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.otp-digits-container {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+}
+
+.otp-digit-input {
+  width: 60px;
+  height: 64px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--deno-gold-primary);
+  text-align: center;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.otp-digit-input:focus {
+  border-color: var(--deno-gold-primary);
+  background: rgba(245, 183, 0, 0.08);
+  box-shadow: 0 0 0 4px rgba(245, 183, 0, 0.25), 0 6px 16px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.otp-digit-input.filled {
+  border-color: rgba(245, 183, 0, 0.6);
+  background: rgba(15, 23, 42, 1);
+}
+
+.otp-confirm-submit-btn {
+  background: linear-gradient(135deg, #f5b700 0%, #e0a700 100%);
+  color: #0b1329;
+  font-weight: 800;
+  font-size: 0.96rem;
+  padding: 13px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(245, 183, 0, 0.35);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.otp-confirm-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 183, 0, 0.5);
+}
+
+.otp-resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 14px;
+}
+
+.otp-resend-btn {
+  background: transparent;
+  border: none;
+  color: var(--deno-gold-primary);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.otp-resend-btn:hover:not(:disabled) {
+  text-decoration: underline;
+  color: #ffd24d;
+}
+
+.otp-resend-btn:disabled {
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.otp-check-inbox-hint {
+  margin-top: 10px;
+  background: rgba(245, 183, 0, 0.08);
+  border: 1px dashed rgba(245, 183, 0, 0.35);
+  border-radius: 10px;
+  padding: 8px 12px;
+  color: #fce7b2;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.otp-check-inbox-hint strong {
+  color: var(--deno-gold-primary);
+}
+
+/* =========================================================
+   RESPONSIVE MODAL BREAKPOINTS (1024px Laptop, Tablet, Mobile)
+   ========================================================= */
+
+/* 1024px Screen Height & Width Optimization */
+@media (max-width: 1024px) {
+  .deno-auth-modal-wrapper {
+    max-width: 880px;
+    max-height: 85vh;
+  }
+  .deno-auth-modal-form-container {
+    padding: 24px 28px;
+    max-height: 85vh;
+  }
+  .deno-auth-modal-visual {
+    padding: 24px;
+  }
+  .deno-auth-visual-title {
+    font-size: 1.6rem;
+  }
+}
+
+/* Mobile & Small Tablets (≤ 868px) - HIDE VISUAL BANNER, FIT FORM TO VIEWPORT */
+@media (max-width: 868px) {
+  .deno-auth-modal-overlay {
+    padding: 10px;
+    align-items: flex-start;
+  }
+  .deno-auth-modal-wrapper {
+    grid-template-columns: 1fr !important;
+    max-height: calc(100vh - 20px) !important;
+    border-radius: 16px;
+    margin: auto 0;
+  }
+  .deno-auth-modal-visual {
+    display: none !important;
+  }
+  .deno-auth-modal-form-container {
+    padding: 20px 16px !important;
+    max-height: calc(100vh - 20px) !important;
+    overflow-y: auto !important;
+  }
+  .deno-auth-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .deno-auth-tier-grid {
+    grid-template-columns: 1fr;
+  }
+  .deno-auth-heading {
+    font-size: 1.4rem;
+  }
+  .deno-auth-subheading {
+    font-size: 0.8rem;
+    margin-bottom: 16px;
+  }
+  .otp-digit-input {
+    width: 50px;
+    height: 54px;
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,300 @@
+/* VIP Travel Portal CSS - Responsive for 1024px, Laptop, Tablet, Mobile */
+.vip-portal-section {
+  background: #070d1b;
+  color: #ffffff;
+  padding: 60px 0;
+  width: 100%;
+}
+
+.vip-portal-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.vip-portal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 20px;
+}
+
+.vip-portal-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #ffb800;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.vip-portal-title {
+  font-family: var(--deno-font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.vip-portal-sub {
+  color: #cbd5e1;
+  font-size: 0.92rem;
+}
+
+.vip-portal-new-hire-btn {
+  background: #ffb800;
+  color: #0b172a;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  transition: var(--deno-transition);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.vip-portal-new-hire-btn:hover {
+  background: #e5a600;
+  transform: translateY(-2px);
+}
+
+/* Empty State Card */
+.vip-portal-empty-card {
+  background: #0c1527;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 56px 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vip-portal-car-svg-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.vip-portal-empty-card h3 {
+  font-family: var(--deno-font-heading);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.vip-portal-empty-card p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  max-width: 500px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.vip-portal-explore-btn {
+  background: #ffb800;
+  color: #0b172a;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  transition: var(--deno-transition);
+}
+
+.vip-portal-explore-btn:hover {
+  background: #e5a600;
+}
+
+/* Hires List */
+.vip-portal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vip-portal-hire-card {
+  background: #0e172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.vip-portal-hire-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.vip-portal-ref-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  display: block;
+}
+
+.vip-portal-ref-code {
+  font-size: 1.1rem;
+  color: #ffb800;
+  font-weight: 800;
+}
+
+.vip-portal-status-chip {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vip-portal-hire-body {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.vip-portal-vehicle-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vip-portal-car-icon {
+  color: #ffb800;
+  background: rgba(255, 184, 0, 0.12);
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.vip-portal-vehicle-info strong {
+  display: block;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.vip-portal-vehicle-info span {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.vip-portal-route-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.vip-portal-route-point {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vip-portal-pin-pickup {
+  color: #3b82f6;
+}
+
+.vip-portal-pin-drop {
+  color: #ef4444;
+}
+
+.vip-portal-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  display: block;
+}
+
+.vip-portal-route-point strong {
+  font-size: 0.85rem;
+  color: #ffffff;
+}
+
+.vip-portal-schedule-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.vip-portal-schedule-info div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vip-portal-fare-box {
+  text-align: right;
+}
+
+.vip-portal-amount {
+  font-size: 1.2rem;
+  color: #ffb800;
+  font-weight: 800;
+  display: block;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1024px) {
+  .vip-portal-title {
+    font-size: 1.9rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .vip-portal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .vip-portal-new-hire-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .vip-portal-hire-body {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .vip-portal-fare-box {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .vip-portal-section {
+    padding: 40px 0;
+  }
+  .vip-portal-container {
+    padding: 0 16px;
+  }
+  .vip-portal-empty-card {
+    padding: 36px 18px;
+  }
+  .vip-portal-title {
+    font-size: 1.5rem;
+  }
+  .vip-portal-hire-body {
+    grid-template-columns: 1fr;
+  }
+}

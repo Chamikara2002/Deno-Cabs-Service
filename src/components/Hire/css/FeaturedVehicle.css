@@ -1,0 +1,165 @@
+/* Featured Vehicle CSS - Responsive */
+.hire-featured-section {
+  padding: 48px 0;
+  background: #f8fafc;
+}
+
+.hire-featured-container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hire-featured-heading {
+  font-family: var(--deno-font-heading);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.hire-featured-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.hire-featured-image-col {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hire-featured-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.hire-featured-card:hover .hire-featured-img {
+  transform: scale(1.03);
+}
+
+.hire-featured-info-col {
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hire-featured-badge {
+  display: inline-block;
+  align-self: flex-start;
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fef3c7;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.hire-featured-title {
+  font-family: var(--deno-font-heading);
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.hire-featured-desc {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.hire-featured-specs-row {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 28px;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.hire-featured-spec-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.spec-label {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.spec-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.hire-featured-book-btn {
+  background: #ffb800;
+  color: #0b172a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 28px;
+  border-radius: 8px;
+  align-self: flex-start;
+  transition: var(--deno-transition);
+  box-shadow: 0 4px 12px rgba(255, 184, 0, 0.3);
+}
+
+.hire-featured-book-btn:hover {
+  background: #e5a600;
+  transform: translateY(-2px);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .hire-featured-card {
+    grid-template-columns: 1fr 1fr;
+  }
+  .hire-featured-info-col {
+    padding: 24px 28px;
+  }
+  .hire-featured-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hire-featured-card {
+    grid-template-columns: 1fr;
+  }
+  .hire-featured-image-col {
+    height: 240px;
+    min-height: 240px;
+  }
+  .hire-featured-info-col {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hire-featured-container {
+    padding: 0 16px;
+  }
+  .hire-featured-book-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

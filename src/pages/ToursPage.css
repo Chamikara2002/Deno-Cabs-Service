@@ -1,0 +1,68 @@
+/* Unique CSS Class names for ToursPage Development Pending state */
+.tours-pending-section {
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  background: #080d1a;
+}
+
+.tours-pending-card {
+  background: linear-gradient(145deg, #0e172a 0%, #152238 100%);
+  border: 1px solid rgba(245, 183, 0, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 183, 0, 0.12);
+  border-radius: 24px;
+  padding: 50px 36px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+
+.tours-pending-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background: rgba(245, 183, 0, 0.12);
+  border: 1px solid rgba(245, 183, 0, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.tours-pending-icon {
+  color: var(--deno-gold-primary);
+}
+
+.tours-pending-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 183, 0, 0.15);
+  color: var(--deno-gold-primary);
+  border: 1px solid rgba(245, 183, 0, 0.4);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.tours-pending-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 12px;
+}
+
+.tours-pending-desc {
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.tours-pending-desc strong {
+  color: var(--deno-gold-primary);
+}

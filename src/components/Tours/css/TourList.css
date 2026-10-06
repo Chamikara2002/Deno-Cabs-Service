@@ -1,0 +1,72 @@
+/* Unique CSS Class names for TourList */
+.tours-list-section {
+  padding: 60px 0 80px;
+  background: #080d1a;
+}
+
+.tours-list-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.tours-list-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.tours-list-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.tours-list-subtitle {
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+.tours-booked-banner {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  padding: 16px 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.tours-booked-banner strong {
+  display: block;
+  font-size: 1.05rem;
+  color: #ffffff;
+}
+
+.tours-booked-banner p {
+  font-size: 0.88rem;
+  color: #a7f3d0;
+}
+
+.tours-banner-close {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tours-list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+@media (max-width: 868px) {
+  .tours-list-grid {
+    grid-template-columns: 1fr;
+  }
+}
