@@ -150,10 +150,20 @@
   color: #15803d;
 }
 
+.status-pill.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
 .dispatch-queued-tag {
   font-size: 0.78rem;
   font-weight: 700;
   color: #10b981;
+}
+
+.dispatch-queued-tag.cancelled {
+  color: #dc2626 !important;
+  font-weight: 800;
 }
 
 /* Stepper Milestones */
@@ -233,33 +243,162 @@
   line-height: 1.4;
 }
 
-/* Route Details Grey Box */
+/* Route Details Grey Box (Clean Centered Highlights: Route -> Pickup Schedule -> Estimated Fare) */
 .route-details-grey-box {
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
 }
 
-.detail-label {
-  font-size: 0.72rem;
-  color: #94a3b8;
-  display: block;
-  margin-bottom: 4px;
+.route-detail-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  width: 100%;
 }
 
-.detail-val {
-  font-size: 0.88rem;
+.route-detail-row:not(:first-child) {
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.detail-header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.detail-label-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.detail-label-pill.fare-pill {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.pill-icon {
+  color: currentColor;
+}
+
+.detail-val-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.96rem;
+  font-weight: 700;
   color: #0f172a;
+  text-align: center;
+  line-height: 1.45;
+  width: 100%;
 }
 
-.detail-val.fare {
-  color: #b45309;
+.route-loc {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.route-loc.pickup {
+  color: #0369a1;
+}
+
+.route-loc.dropoff {
+  color: #047857;
+}
+
+.route-arrow-icon {
+  color: #d97706;
   font-weight: 900;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 2px;
+}
+
+.schedule-date-badge {
+  background: #f8fafc;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.schedule-dot {
+  color: #cbd5e1;
+  font-weight: 900;
+}
+
+.schedule-time-badge {
+  background: #f8fafc;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 700;
+}
+
+/* Crystal-Clear Highlighted Fare Box */
+.fare-highlight-box {
+  background: linear-gradient(135deg, #fffdf5 0%, #fef3c7 100%);
+  border: 1.5px solid #fcd34d;
+  border-radius: 12px;
+  padding: 14px 20px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 3px 12px rgba(217, 119, 6, 0.1);
+}
+
+.fare-currency-tag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #b45309;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.detail-val.fare-large {
+  color: #b45309;
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.fare-sub-note {
+  font-size: 0.74rem;
+  color: #059669;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
 .status-card-footer {
@@ -525,14 +664,101 @@
   background: #10b981 !important;
 }
 
+.red-line {
+  background: #ef4444 !important;
+}
+
+.milestone-badge.red {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+}
+
 .milestone-time.green-time {
   color: #10b981 !important;
   font-weight: 700;
 }
 
+.milestone-time.red-time {
+  color: #ef4444 !important;
+  font-weight: 700;
+}
+
+.text-red {
+  color: #dc2626 !important;
+}
+
+.text-red-dim {
+  color: #ef4444 !important;
+}
+
 .dispatch-queued-tag.active {
   color: #10b981 !important;
   font-weight: 800;
+}
+
+.chauffeur-cancelled-pill {
+  background: #fee2e2;
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chauffeur-info-box.cancelled {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.08);
+}
+
+.chauffeur-avatar-cancelled {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sens-tag.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  font-weight: 800;
+  font-size: 0.68rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.chauffeur-phone-pill.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  font-weight: 700;
+}
+
+.license-plate-pill.cancelled {
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 4px 12px;
+  border-radius: 6px;
+}
+
+.history-status-red {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 10px;
 }
 
 .color-dot-indicator {
@@ -543,6 +769,127 @@
   margin-right: 6px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   vertical-align: middle;
+}
+
+/* ================= TRIP COMPLETION ACTION BAR & SUCCESS STRIP ================= */
+.trip-status-action-container {
+  margin: 16px 0 8px;
+}
+
+.btn-mark-trip-completed {
+  width: 100%;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 22px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-mark-trip-completed:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(16, 185, 129, 0.45);
+}
+
+.btn-mark-trip-completed:active {
+  transform: translateY(0);
+}
+
+.btn-mark-trip-completed:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.trip-completed-success-strip {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
+  animation: fadeInCompleted 0.3s ease;
+}
+
+@keyframes fadeInCompleted {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.completed-badge-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.completed-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.completed-meta strong {
+  font-size: 0.92rem;
+  color: #065f46;
+  font-weight: 800;
+}
+
+.completed-meta span {
+  font-size: 0.76rem;
+  color: #047857;
+  line-height: 1.35;
+}
+
+.btn-view-payment-history {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.btn-view-payment-history:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
+.status-pill.completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.dispatch-queued-tag.completed {
+  color: #10b981 !important;
+  font-weight: 800;
 }
 
 .veh-spec-item.color-spec {
@@ -1212,7 +1559,7 @@
   }
 
   .route-details-grey-box {
-    grid-template-columns: 1fr;
+    padding: 14px;
   }
 
   .allocation-actions-row {

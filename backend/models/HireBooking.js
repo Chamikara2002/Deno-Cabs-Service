@@ -103,8 +103,7 @@ const hireBookingSchema = new mongoose.Schema(
     vehicle: {
       category: {
         type: String,
-        default: 'Cars',
-        enum: ['Cars', 'SUVs', 'Vans', 'Buses', 'Luxury']
+        default: 'Cars'
       },
       model: {
         type: String,
@@ -143,8 +142,7 @@ const hireBookingSchema = new mongoose.Schema(
       },
       paymentStatus: {
         type: String,
-        default: 'Advance Paid (50%)',
-        enum: ['Pending', 'Advance Paid (50%)', 'Paid in Full', 'Corporate Invoiced', 'Refunded']
+        default: 'Advance Paid (50%)'
       },
       tollIncluded: {
         type: Boolean,
@@ -181,16 +179,24 @@ const hireBookingSchema = new mongoose.Schema(
         default: ''
       }
     },
+    customerId: {
+      type: String,
+      default: '',
+      trim: true
+    },
+    userId: {
+      type: String,
+      default: '',
+      trim: true
+    },
     status: {
       type: String,
-      default: 'Pending Dispatch',
-      enum: ['Pending Dispatch', 'Confirmed / Active', 'In Transit', 'Completed', 'Cancelled'],
+      default: 'Pending Approval',
       index: true
     },
     badgeType: {
       type: String,
-      default: 'pending',
-      enum: ['pending', 'active', 'cancelled', 'completed']
+      default: 'pending'
     },
     assignedDriver: {
       name: {

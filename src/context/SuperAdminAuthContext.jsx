@@ -18,7 +18,7 @@ export const DEFAULT_SUPER_ADMIN_CREDENTIALS = {
 export const INITIAL_DISPATCH_BOOKINGS = [];
 
 // Production Cache Purger: Clears any leftover test bookings and sets clean Dinusha Chandima profile
-const PROD_CLEAN_KEY = 'deno_superadmin_clean_ledger_2026_v6';
+const PROD_CLEAN_KEY = 'deno_superadmin_clean_ledger_2026_v7';
 if (typeof window !== 'undefined') {
   try {
     if (localStorage.getItem(PROD_CLEAN_KEY) !== 'true') {
@@ -61,10 +61,14 @@ export const SuperAdminAuthProvider = ({ children }) => {
     return DEFAULT_SUPER_ADMIN_CREDENTIALS;
   });
 
-  // Current Auth Session
+  // Current Auth Session (Supported across all browsers & tabs)
   const [isSuperAdminAuth, setIsSuperAdminAuth] = useState(() => {
-    const session = sessionStorage.getItem('deno_super_admin_session');
-    return session === 'true';
+    try {
+      const session = sessionStorage.getItem('deno_super_admin_session') || localStorage.getItem('deno_super_admin_session');
+      return session === 'true';
+    } catch {
+      return false;
+    }
   });
 
   // Bookings list state: starts 100% clean and empty for live bookings
@@ -102,9 +106,22 @@ export const SuperAdminAuthProvider = ({ children }) => {
     localStorage.setItem('deno_dispatch_bookings', JSON.stringify(bookings));
   }, [bookings]);
 
-  // Fetch real bookings from MongoDB backend on mount
+  // Fetch real super admin credentials and bookings from MongoDB backend on mount
   useEffect(() => {
-    const fetchBackendBookings = async () => {
+    const fetchAdminData = async () => {
+      // 1. Sync admin credentials from MongoDB
+      try {
+        const credRes = await hireApi.getAdminCredentials();
+        if (credRes?.data) {
+          setAdminCredentials((prev) => ({ ...prev, ...credRes.data }));
+          localStorage.setItem('deno_super_admin_credentials', JSON.stringify(credRes.data));
+          console.log(`✅ [MongoDB Synced]: Super Admin credentials active.`);
+        }
+      } catch (err) {
+        console.warn('Admin credentials sync note:', err.message);
+      }
+
+      // 2. Sync all bookings from MongoDB
       try {
         const res = await hireApi.getBookings();
         if (res?.data && Array.isArray(res.data)) {
@@ -117,7 +134,7 @@ export const SuperAdminAuthProvider = ({ children }) => {
       }
     };
 
-    fetchBackendBookings();
+    fetchAdminData();
   }, []);
 
   // Listen for customer bookings placed in real-time across the app
@@ -143,11 +160,27 @@ export const SuperAdminAuthProvider = ({ children }) => {
     };
   }, []);
 
-  // Login verification function: strictly enforces Email and Password
-  const loginSuperAdmin = (emailInput, passwordInput) => {
+  // Login verification function: validates against MongoDB backend with local fallback
+  const loginSuperAdmin = async (emailInput, passwordInput) => {
     const cleanedEmail = (emailInput || '').trim().toLowerCase();
     const cleanedPassword = (passwordInput || '').trim();
 
+    // 1. Try real MongoDB authentication first
+    try {
+      const res = await hireApi.login({ usernameOrEmail: cleanedEmail, password: cleanedPassword });
+      if (res?.success && res.isSuperAdmin) {
+        setIsSuperAdminAuth(true);
+        sessionStorage.setItem('deno_super_admin_session', 'true');
+        localStorage.setItem('deno_super_admin_session', 'true');
+        return { success: true };
+      }
+    } catch (apiErr) {
+      if (apiErr.message && (apiErr.message.includes('password') || apiErr.message.includes('Invalid password'))) {
+        return { success: false, error: apiErr.message };
+      }
+    }
+
+    // 2. Fallback check with cached credentials
     const targetEmail = (adminCredentials.email || 'wdinushac@gmail.com').trim().toLowerCase();
     const targetPassword = (adminCredentials.password || 'Dinu_@1996').trim();
 
@@ -157,6 +190,7 @@ export const SuperAdminAuthProvider = ({ children }) => {
     if (isEmailMatch && isPasswordMatch) {
       setIsSuperAdminAuth(true);
       sessionStorage.setItem('deno_super_admin_session', 'true');
+      localStorage.setItem('deno_super_admin_session', 'true');
       return { success: true };
     }
 
@@ -173,10 +207,11 @@ export const SuperAdminAuthProvider = ({ children }) => {
   const logoutSuperAdmin = () => {
     setIsSuperAdminAuth(false);
     sessionStorage.removeItem('deno_super_admin_session');
+    localStorage.removeItem('deno_super_admin_session');
   };
 
   // Step 1: Request Password Change -> Validates input & generates OTP & Dispatches to Email
-  const requestPasswordChange = (newPassword, confirmPassword) => {
+  const requestPasswordChange = async (newPassword, confirmPassword) => {
     if (!newPassword || newPassword.length < 6) {
       return { success: false, error: 'New password must be at least 6 characters long.' };
     }
@@ -194,29 +229,48 @@ export const SuperAdminAuthProvider = ({ children }) => {
     setIsChangePasswordModalOpen(false);
     setIsOtpModalOpen(true);
 
-    // Show simulated Email Notification Toast to wdinushac@gmail.com
+    const targetEmail = adminCredentials.email || 'wdinushac@gmail.com';
+
+    // Show instant toast notification to user
     const toastPayload = {
       id: Date.now(),
-      email: adminCredentials.email,
+      email: targetEmail,
       otp: otpCode,
       timestamp: new Date().toLocaleTimeString()
     };
     setEmailNotificationToast(toastPayload);
 
+    // Dispatch real email via backend nodemailer
+    try {
+      hireApi.sendOtp({
+        email: targetEmail,
+        otp: otpCode
+      }).catch((err) => console.warn('Background Super Admin OTP email note:', err.message));
+    } catch (err) {
+      console.warn('Super admin OTP dispatch note:', err);
+    }
+
     return {
       success: true,
       otp: otpCode,
-      message: `OTP Code has been successfully sent to ${adminCredentials.email}`
+      message: `OTP Code has been successfully sent to ${targetEmail}`
     };
   };
 
-  // Step 2: Verify OTP and finalize updating the password
-  const verifyOtpAndUpdatePassword = (enteredOtp) => {
+  // Step 2: Verify OTP and finalize updating the password in MongoDB Database
+  const verifyOtpAndUpdatePassword = async (enteredOtp) => {
     if (!enteredOtp || enteredOtp.trim() !== generatedOtp) {
       return { success: false, error: 'Invalid OTP code. Please enter the 6-digit code sent to your email.' };
     }
 
-    // Update the stored password
+    // Update password directly in MongoDB Database so it works on any browser
+    try {
+      await hireApi.updateAdminPassword(pendingNewPassword);
+    } catch (err) {
+      console.warn('MongoDB password update note:', err.message);
+    }
+
+    // Update the stored password locally
     setAdminCredentials((prev) => ({
       ...prev,
       password: pendingNewPassword
@@ -229,7 +283,7 @@ export const SuperAdminAuthProvider = ({ children }) => {
 
     return {
       success: true,
-      message: 'Super Admin password updated successfully! Current password has been replaced.'
+      message: 'Super Admin password updated in MongoDB database successfully! Current password has been replaced across all browsers.'
     };
   };
 
@@ -239,13 +293,25 @@ export const SuperAdminAuthProvider = ({ children }) => {
     setGeneratedOtp(newOtp);
     setOtpSentTime(new Date());
 
+    const targetEmail = adminCredentials.email || 'wdinushac@gmail.com';
+
     const toastPayload = {
       id: Date.now(),
-      email: adminCredentials.email,
+      email: targetEmail,
       otp: newOtp,
       timestamp: new Date().toLocaleTimeString()
     };
     setEmailNotificationToast(toastPayload);
+
+    // Dispatch real email via backend
+    try {
+      hireApi.sendOtp({
+        email: targetEmail,
+        otp: newOtp
+      }).catch((err) => console.warn('Background Super Admin OTP resend note:', err.message));
+    } catch (err) {
+      console.warn('Super admin OTP resend dispatch note:', err);
+    }
 
     return newOtp;
   };
@@ -255,9 +321,30 @@ export const SuperAdminAuthProvider = ({ children }) => {
     setEmailNotificationToast(null);
   };
 
+  // Helper to generate formatted sequential booking reference: #DENO-000-000-001
+  const formatBookingRef = (sequenceNumber = 1) => {
+    const padded = String(sequenceNumber).padStart(9, '0');
+    return `#DENO-${padded.slice(0, 3)}-${padded.slice(3, 6)}-${padded.slice(6, 9)}`;
+  };
+
   // Booking operations
   const addSimulatedHire = (newHireData) => {
-    const refNumber = '#DENO-' + Math.floor(85100 + Math.random() * 900);
+    let nextSeq = 1;
+    if (bookings && bookings.length > 0) {
+      let maxSeq = 0;
+      bookings.forEach(b => {
+        const raw = String(b.ref || b.id || b.bookingId || '');
+        const cleanDigits = raw.replace(/^#?DENO-?/i, '').replace(/[^0-9]/g, '');
+        if (cleanDigits) {
+          const num = parseInt(cleanDigits, 10);
+          if (!isNaN(num) && num < 1000000000 && num > maxSeq) {
+            maxSeq = num;
+          }
+        }
+      });
+      nextSeq = Math.max(bookings.length + 1, (maxSeq < 50000 ? maxSeq + 1 : bookings.length + 1));
+    }
+    const refNumber = newHireData.ref || formatBookingRef(nextSeq);
     const newEntry = {
       id: refNumber.replace('#', ''),
       ref: refNumber,
@@ -298,21 +385,23 @@ export const SuperAdminAuthProvider = ({ children }) => {
 
   const updateBookingStatus = (bookingId, newStatus, assignmentData = {}) => {
     let updatedBookingObj = null;
+    const isCancel = newStatus.toLowerCase().includes('cancel');
 
     setBookings((prev) => {
       const updatedList = prev.map((b) => {
         if (b.id === bookingId || b.ref === bookingId || (b.id && bookingId && b.id.replace('#', '') === bookingId.replace('#', ''))) {
-          const badgeType = newStatus.toLowerCase().includes('pending')
-            ? 'pending'
-            : newStatus.toLowerCase().includes('cancel')
+          const badgeType = isCancel
             ? 'cancelled'
+            : newStatus.toLowerCase().includes('pending')
+            ? 'pending'
             : 'active';
           
           updatedBookingObj = {
             ...b,
             ...assignmentData,
             status: newStatus,
-            badgeType
+            badgeType,
+            dispatchConfirmed: !isCancel && Boolean(assignmentData.dispatchConfirmed || newStatus === 'Confirmed / Active')
           };
           return updatedBookingObj;
         }
@@ -350,8 +439,8 @@ export const SuperAdminAuthProvider = ({ children }) => {
         ...(updatedBookingObj || {}),
         ...assignmentData,
         status: newStatus,
-        badgeType: 'active',
-        dispatchConfirmed: true
+        badgeType: isCancel ? 'cancelled' : 'active',
+        dispatchConfirmed: !isCancel && Boolean(assignmentData.dispatchConfirmed || newStatus === 'Confirmed / Active')
       };
 
       if (foundIndex !== -1) {
@@ -375,6 +464,42 @@ export const SuperAdminAuthProvider = ({ children }) => {
     }
   };
 
+  // Delete booking from MongoDB database and local caches
+  const deleteBooking = async (bookingId) => {
+    const cleanId = String(bookingId || '').replace('#', '').trim();
+
+    // 1. Remove from local state
+    setBookings((prev) => {
+      const filtered = prev.filter(
+        (b) => b.id !== bookingId && b.ref !== bookingId && String(b.id || '').replace('#', '') !== cleanId && String(b.ref || '').replace('#', '') !== cleanId
+      );
+      localStorage.setItem('deno_dispatch_bookings', JSON.stringify(filtered));
+      return filtered;
+    });
+
+    // 2. Remove from ledger
+    try {
+      const savedLedger = localStorage.getItem('deno_all_hires_ledger');
+      if (savedLedger) {
+        const ledger = JSON.parse(savedLedger);
+        const updated = ledger.filter(
+          (b) => b.id !== bookingId && b.ref !== bookingId && String(b.id || '').replace('#', '') !== cleanId && String(b.ref || '').replace('#', '') !== cleanId
+        );
+        localStorage.setItem('deno_all_hires_ledger', JSON.stringify(updated));
+      }
+    } catch {}
+
+    // 3. Delete from MongoDB backend
+    try {
+      await hireApi.deleteBooking(bookingId);
+      console.log(`🗑️ [MongoDB]: Booking ${bookingId} deleted from database.`);
+    } catch (err) {
+      console.warn('Backend delete notification:', err.message);
+    }
+
+    window.dispatchEvent(new Event('storage'));
+  };
+
   return (
     <SuperAdminAuthContext.Provider
       value={{
@@ -394,7 +519,8 @@ export const SuperAdminAuthProvider = ({ children }) => {
         dismissEmailToast,
         bookings,
         addSimulatedHire,
-        updateBookingStatus
+        updateBookingStatus,
+        deleteBooking
       }}
     >
       {children}

@@ -7,7 +7,7 @@ const AuthContext = createContext();
 const INITIAL_REGISTERED_USERS = [];
 
 // Production Cache Purger: Clears any leftover test bookings and purges stale mock user sessions
-const PROD_CLEAN_KEY = 'deno_superadmin_clean_ledger_2026_v6';
+const PROD_CLEAN_KEY = 'deno_superadmin_clean_ledger_2026_v7';
 if (typeof window !== 'undefined') {
   try {
     if (localStorage.getItem(PROD_CLEAN_KEY) !== 'true') {
@@ -32,13 +32,20 @@ const DEMO_USER_EMAILS = ['damith.j@enterprisetech.lk', 'kasun@denocabs.com', 'e
 const filterUserBookings = (currentUser, list) => {
   if (!currentUser || !currentUser.email) return [];
   const userEmail = (currentUser.email || '').toLowerCase().trim();
-  const userId = currentUser.id;
+  const userId = currentUser.id || currentUser._id;
   if (!Array.isArray(list)) return [];
   
   return list.filter((b) => {
-    const bEmail = (b.contactEmail || b.email || b.customerEmail || b.customer?.email || '').toLowerCase().trim();
+    if (!b) return false;
+    const bEmail = (
+      b.contactEmail || 
+      b.email || 
+      b.customerEmail || 
+      b.customer?.email || 
+      (typeof b.customer === 'string' && b.customer.includes('@') ? b.customer : '')
+    ).toLowerCase().trim();
     const bUid = b.userId || b.customerId;
-    return (bEmail && bEmail === userEmail) || (bUid && bUid === userId);
+    return (bEmail && bEmail === userEmail) || (bUid && userId && String(bUid) === String(userId));
   });
 };
 
@@ -162,22 +169,65 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user, allHiresLedger]);
 
-  // Fetch real bookings from MongoDB backend on mount
+  // Fetch real registered users and bookings from MongoDB backend on mount
   useEffect(() => {
-    const fetchBackendBookings = async () => {
+    const fetchBackendData = async () => {
+      // 1. Fetch Users from MongoDB
+      try {
+        const userRes = await hireApi.getUsers();
+        if (userRes?.data && Array.isArray(userRes.data)) {
+          const dbUsers = userRes.data;
+
+          // Check if localStorage has any user that is not yet in MongoDB (e.g. registered in offline mode or edge)
+          const localSaved = localStorage.getItem('deno_registered_users');
+          if (localSaved) {
+            try {
+              const localUsers = JSON.parse(localSaved);
+              if (Array.isArray(localUsers)) {
+                for (const lUser of localUsers) {
+                  if (
+                    lUser && 
+                    lUser.email && 
+                    !DEMO_USER_EMAILS.includes(lUser.email.toLowerCase()) && 
+                    lUser.fullName !== 'Alexander Vance'
+                  ) {
+                    const existsInDb = dbUsers.some(
+                      (u) => u.email.toLowerCase() === lUser.email.toLowerCase()
+                    );
+                    if (!existsInDb && lUser.password) {
+                      // Auto-sync offline created user to MongoDB!
+                      hireApi.register(lUser).catch(() => {});
+                    }
+                  }
+                }
+              }
+            } catch {}
+          }
+
+          setRegisteredUsers(dbUsers);
+          localStorage.setItem('deno_registered_users', JSON.stringify(dbUsers));
+          console.log(`✅ [MongoDB Synced]: Loaded ${dbUsers.length} registered users from database.`);
+        }
+      } catch (err) {
+        console.warn('⚠️ [MongoDB Sync Notice - Users]: Using cached local storage users.', err.message);
+      }
+
+      // 2. Fetch Bookings from MongoDB
       try {
         const res = await hireApi.getBookings();
         if (res?.data && Array.isArray(res.data)) {
-          setAllHiresLedger(res.data);
-          localStorage.setItem('deno_all_hires_ledger', JSON.stringify(res.data));
-          localStorage.setItem('deno_dispatch_bookings', JSON.stringify(res.data));
+          const dbBookings = res.data;
+          setAllHiresLedger(dbBookings);
+          localStorage.setItem('deno_all_hires_ledger', JSON.stringify(dbBookings));
+          localStorage.setItem('deno_dispatch_bookings', JSON.stringify(dbBookings));
+          console.log(`✅ [MongoDB Synced]: Loaded ${dbBookings.length} bookings from database.`);
         }
       } catch (err) {
-        console.warn('⚠️ [MongoDB Sync Notice - Auth]: Using cached local storage bookings.', err.message);
+        console.warn('⚠️ [MongoDB Sync Notice - Bookings]: Using cached local storage bookings.', err.message);
       }
     };
 
-    fetchBackendBookings();
+    fetchBackendData();
   }, []);
 
   // Listen for real-time dispatch and ledger updates
@@ -242,8 +292,8 @@ export const AuthProvider = ({ children }) => {
     return DEFAULT_SUPER_ADMIN_CREDENTIALS;
   };
 
-  // Unified Login Handler for both Normal Customers and Super Admin
-  const login = ({ usernameOrEmail, password }) => {
+  // Unified Login Handler for both Normal Customers and Super Admin (Cross-Browser MongoDB Sync)
+  const login = async ({ usernameOrEmail, password }) => {
     const input = (usernameOrEmail || '').trim();
     const inputPwd = (password || '').trim();
 
@@ -251,6 +301,59 @@ export const AuthProvider = ({ children }) => {
       return { success: false, error: 'Please enter both Email/Username and Password.' };
     }
 
+    // 1. Try real MongoDB Authentication first
+    try {
+      const res = await hireApi.login({ usernameOrEmail: input, password: inputPwd });
+      if (res?.success && res.user) {
+        if (res.isSuperAdmin) {
+          sessionStorage.setItem('deno_super_admin_session', 'true');
+          setIsSuperAdmin(true);
+          setUser(res.user);
+          setIsAuthModalOpen(false);
+          return { success: true, isSuperAdmin: true, user: res.user };
+        } else {
+          setUser(res.user);
+          setIsSuperAdmin(false);
+          sessionStorage.removeItem('deno_super_admin_session');
+          setIsAuthModalOpen(false);
+
+          // Update local state and localStorage
+          setRegisteredUsers((prev) => {
+            const exists = prev.some((u) => u.email.toLowerCase() === res.user.email.toLowerCase());
+            const updated = exists 
+              ? prev.map((u) => (u.email.toLowerCase() === res.user.email.toLowerCase() ? { ...u, ...res.user } : u))
+              : [res.user, ...prev];
+            localStorage.setItem('deno_registered_users', JSON.stringify(updated));
+            return updated;
+          });
+
+          return { success: true, isSuperAdmin: false, user: res.user };
+        }
+      }
+    } catch (apiErr) {
+      const errMsg = apiErr.message || '';
+      if (
+        errMsg.includes('not found') || 
+        errMsg.includes('No customer account') || 
+        errMsg.includes('No account found') || 
+        errMsg.includes('not registered')
+      ) {
+        return {
+          success: false,
+          notRegistered: true,
+          typedEmail: input,
+          error: `No customer account registered under "${input}". Please register first to continue.`
+        };
+      }
+      if (errMsg.includes('Incorrect password') || errMsg.includes('Invalid password')) {
+        return {
+          success: false,
+          error: 'Incorrect password. Please check your password and try again.'
+        };
+      }
+    }
+
+    // 2. Fallback to Local Verification if backend is offline
     const adminCreds = getSuperAdminCredentials();
     const isSuperAdminInput = 
       input.toLowerCase() === adminCreds.email.toLowerCase() ||
@@ -258,10 +361,8 @@ export const AuthProvider = ({ children }) => {
       input.toLowerCase() === 'super_admin' ||
       input.toLowerCase() === 'admin';
 
-    // 1. CHECK IF INPUT IS SUPER ADMIN (Direct Login - No registration needed)
     if (isSuperAdminInput) {
       if (inputPwd === adminCreds.password || inputPwd === 'Dinu_@1996') {
-        // Successful Super Admin login
         sessionStorage.setItem('deno_super_admin_session', 'true');
         setIsSuperAdmin(true);
 
@@ -287,24 +388,21 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    // 2. CHECK IF NORMAL CUSTOMER EXISTS IN REGISTERED USERS
     const existingUser = registeredUsers.find(
       (u) =>
         u.email.toLowerCase() === input.toLowerCase() ||
         (u.username && u.username.toLowerCase() === input.toLowerCase())
     );
 
-    // If customer has NOT registered before (Account not found)
     if (!existingUser) {
       return {
         success: false,
         notRegistered: true,
         typedEmail: input,
-        error: 'Account not found! You have not created an account yet. Please register first to continue.'
+        error: `No customer account registered under "${input}". Please register first to continue.`
       };
     }
 
-    // If user exists, check password
     if (existingUser.password && existingUser.password !== inputPwd) {
       return {
         success: false,
@@ -312,14 +410,15 @@ export const AuthProvider = ({ children }) => {
       };
     }
 
-    // Successful normal customer login
     const loggedUser = {
-      id: existingUser.id || 'usr_' + Date.now(),
+      id: existingUser.id || existingUser._id || 'usr_' + Date.now(),
       fullName: existingUser.fullName,
       username: existingUser.username,
       email: existingUser.email,
       phone: existingUser.phone || '+94 77 123 4567',
       accountTier: existingUser.accountTier || 'Individual / Guest',
+      accountNumber: existingUser.accountNumber || '',
+      companyName: existingUser.companyName || '',
       avatarUrl: existingUser.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
       notificationCount: 2,
       isSuperAdmin: false
@@ -333,40 +432,59 @@ export const AuthProvider = ({ children }) => {
     return { success: true, isSuperAdmin: false, user: loggedUser };
   };
 
-  // Register new customer handler (supports optional autoLogin parameter)
-  const register = (registrationData, autoLogin = false) => {
+  // Register new customer handler (saves directly into MongoDB for all browsers)
+  const register = async (registrationData, autoLogin = false) => {
     const email = (registrationData.email || '').trim().toLowerCase();
     const username = (registrationData.username || '').trim().toLowerCase();
 
-    // Check if email already registered
-    const emailExists = registeredUsers.some((u) => u.email.toLowerCase() === email);
-    if (emailExists) {
-      return { success: false, error: 'An account with this email address already exists. Please Sign In.' };
+    let createdUser = null;
+
+    // 1. Save directly into MongoDB Database
+    try {
+      const res = await hireApi.register({
+        ...registrationData,
+        email,
+        username
+      });
+      if (res?.success && res.user) {
+        createdUser = res.user;
+      }
+    } catch (err) {
+      console.warn('MongoDB register notice:', err.message);
     }
 
-    const newUser = {
-      id: 'usr_' + Date.now(),
-      fullName: registrationData.fullName || 'New User',
-      username: registrationData.username || 'user_' + Date.now().toString().slice(-4),
-      email: registrationData.email,
-      phone: registrationData.phone || '+94 77 000 0000',
-      password: registrationData.password,
-      accountTier: registrationData.accountTier || 'Individual / Guest',
-      avatarUrl: registrationData.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-      notificationCount: 1,
-      isSuperAdmin: false
-    };
+    // Fallback if backend offline
+    if (!createdUser) {
+      createdUser = {
+        id: 'usr_' + Date.now(),
+        fullName: registrationData.fullName || 'New User',
+        username: registrationData.username || 'user_' + Date.now().toString().slice(-4),
+        email: registrationData.email,
+        phone: registrationData.phone || '+94 77 000 0000',
+        password: registrationData.password,
+        accountTier: registrationData.accountTier || 'Individual / Guest',
+        accountNumber: `#CUST-DENO-${Date.now().toString().slice(-4)}`,
+        companyName: registrationData.companyName || '',
+        avatarUrl: registrationData.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        notificationCount: 1,
+        isSuperAdmin: false
+      };
+    }
 
-    setRegisteredUsers((prev) => [newUser, ...prev]);
+    setRegisteredUsers((prev) => {
+      const updated = [createdUser, ...prev.filter((u) => u.email.toLowerCase() !== createdUser.email.toLowerCase())];
+      localStorage.setItem('deno_registered_users', JSON.stringify(updated));
+      return updated;
+    });
 
     if (autoLogin) {
-      setUser(newUser);
+      setUser(createdUser);
       setIsSuperAdmin(false);
       sessionStorage.removeItem('deno_super_admin_session');
       setIsAuthModalOpen(false);
     }
 
-    return { success: true, user: newUser };
+    return { success: true, user: createdUser };
   };
 
   // Google Account Login / Registration Bridge Handler
@@ -481,9 +599,30 @@ export const AuthProvider = ({ children }) => {
     setLoginAlertModal({ isOpen: false, message: '', onConfirm: null });
   };
 
+  // Helper to generate formatted sequential booking reference: #DENO-000-000-001
+  const formatBookingRef = (sequenceNumber = 1) => {
+    const padded = String(sequenceNumber).padStart(9, '0');
+    return `#DENO-${padded.slice(0, 3)}-${padded.slice(3, 6)}-${padded.slice(6, 9)}`;
+  };
+
   // Add new hire booking with full customer metadata synced to Super Admin dispatch
   const addHireBooking = (hireData) => {
-    const refNum = '#DENO-' + Math.floor(85200 + Math.random() * 799);
+    let nextSeq = 1;
+    if (allHiresLedger && allHiresLedger.length > 0) {
+      let maxSeq = 0;
+      allHiresLedger.forEach(b => {
+        const raw = String(b.ref || b.id || b.bookingId || '');
+        const cleanDigits = raw.replace(/^#?DENO-?/i, '').replace(/[^0-9]/g, '');
+        if (cleanDigits) {
+          const num = parseInt(cleanDigits, 10);
+          if (!isNaN(num) && num < 1000000000 && num > maxSeq) {
+            maxSeq = num;
+          }
+        }
+      });
+      nextSeq = Math.max(allHiresLedger.length + 1, (maxSeq < 50000 ? maxSeq + 1 : allHiresLedger.length + 1));
+    }
+    const refNum = hireData.ref || formatBookingRef(nextSeq);
     const idVal = refNum.replace('#', '');
     
     // Calculate numeric fare

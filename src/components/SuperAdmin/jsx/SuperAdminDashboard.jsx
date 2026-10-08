@@ -7,6 +7,7 @@ import ChangePasswordModal from './ChangePasswordModal';
 import EmailOtpToast from './EmailOtpToast';
 import ExploreBookingModal from './ExploreBookingModal';
 import SimulateHireModal from './SimulateHireModal';
+import ManageDriversModal from './ManageDriversModal';
 import LeafletRouteMap from '../../Common/LeafletRouteMap';
 import { 
   Radio, 
@@ -16,9 +17,10 @@ import {
   ShieldCheck, 
   Activity, 
   Flame, 
-  Sparkles,
-  PhoneCall,
-  CheckCircle2
+  Sparkles, 
+  PhoneCall, 
+  CheckCircle2,
+  Users
 } from 'lucide-react';
 import '../css/SuperAdminDashboard.css';
 
@@ -32,6 +34,7 @@ const SuperAdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'console'
   const [selectedBookingForExplore, setSelectedBookingForExplore] = useState(null);
   const [isSimulateModalOpen, setIsSimulateModalOpen] = useState(false);
+  const [isManageDriversOpen, setIsManageDriversOpen] = useState(false);
 
   return (
     <div className="deno-superadmin-page-root">
@@ -41,6 +44,7 @@ const SuperAdminDashboard = () => {
         setActiveTab={setActiveTab} 
         totalBookingsCount={bookings.length}
         onSimulateInboundHire={() => setIsSimulateModalOpen(true)}
+        onManageDrivers={() => setIsManageDriversOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -136,6 +140,11 @@ const SuperAdminDashboard = () => {
 
       {/* Global Super Admin Modals */}
       <ChangePasswordModal />
+
+      <ManageDriversModal
+        isOpen={isManageDriversOpen}
+        onClose={() => setIsManageDriversOpen(false)}
+      />
       
       {selectedBookingForExplore && (
         <ExploreBookingModal
@@ -148,6 +157,7 @@ const SuperAdminDashboard = () => {
             ) || selectedBookingForExplore
           }
           onClose={() => setSelectedBookingForExplore(null)}
+          onOpenManageDrivers={() => setIsManageDriversOpen(true)}
         />
       )}
 

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import hireApi from '../services/hireApi';
 import {
   CreditCard, TrendingUp, Award, Calendar, Download, FileText, Filter, Search,
   ChevronLeft, ChevronRight, ShieldCheck, Phone, Mail, CheckCircle, ArrowRight, X, Check,
@@ -23,24 +24,78 @@ const PaymentHistoryPage = () => {
   const [dateRangePreset, setDateRangePreset] = useState('All Time');
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
+  const [liveHires, setLiveHires] = useState([]);
+
+  // Live real-time sync with MongoDB & localStorage
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const saved = localStorage.getItem('deno_user_hires') || localStorage.getItem('deno_all_hires_ledger');
+        if (saved) {
+          setLiveHires(JSON.parse(saved));
+        }
+      } catch {}
+    };
+
+    window.addEventListener('deno_user_hires_updated', handleSync);
+    window.addEventListener('deno_dispatch_updated', handleSync);
+    window.addEventListener('storage', handleSync);
+
+    if (user?.email) {
+      hireApi.getBookings().then((res) => {
+        if (res?.data && Array.isArray(res.data)) {
+          const userEmail = user.email.toLowerCase().trim();
+          const filtered = res.data.filter(b => {
+            const bEmail = (b.contactEmail || b.email || b.customerEmail || b.customer?.email || '').toLowerCase().trim();
+            return bEmail === userEmail;
+          });
+          if (filtered.length > 0) {
+            setLiveHires(filtered);
+          }
+        }
+      }).catch(() => {});
+    }
+
+    return () => {
+      window.removeEventListener('deno_user_hires_updated', handleSync);
+      window.removeEventListener('deno_dispatch_updated', handleSync);
+      window.removeEventListener('storage', handleSync);
+    };
+  }, [user]);
+
+  // Combined user hires list
+  const effectiveUserHires = (liveHires && liveHires.length > 0) ? liveHires : (userHires || []);
 
   // Dynamically compute user-scoped completed hire transactions
-  const userCompletedHires = (user && Array.isArray(userHires))
-    ? userHires.filter(h => {
+  const userCompletedHires = (user && Array.isArray(effectiveUserHires))
+    ? effectiveUserHires.filter(h => {
         const st = (h.status || '').toLowerCase();
+        const paySt = (h.paymentStatus || '').toLowerCase();
+        const isCancelled = st.includes('cancel') || h.badgeType === 'cancelled';
+        if (isCancelled) return false;
+
         return (
           st.includes('complete') ||
           st.includes('settle') ||
-          st.includes('paid') ||
           st.includes('done') ||
-          h.dispatchConfirmed ||
-          h.paymentStatus === 'Paid'
+          (paySt === 'paid' && st !== 'pending' && !st.includes('pending') && !st.includes('active') && !st.includes('dispatch')) ||
+          h.badgeType === 'completed' ||
+          Boolean(h.completedAt)
         );
       })
     : [];
 
   const dynamicTransactions = userCompletedHires.map((hire, idx) => {
-    const priceNum = Number(hire.totalPrice || hire.price || hire.estimatedFare || 0);
+    const priceNum = typeof hire.totalLKR === 'number' && hire.totalLKR > 0
+      ? hire.totalLKR
+      : typeof hire.totalPrice === 'number' && hire.totalPrice > 0
+      ? hire.totalPrice
+      : typeof hire.price === 'number' && hire.price > 0
+      ? hire.price
+      : typeof hire.estimatedFare === 'string'
+      ? (Number(hire.estimatedFare.replace(/[^0-9]/g, '')) || 28500)
+      : Number(hire.estimatedFare) || 28500;
+
     const dateObj = hire.date ? new Date(hire.date) : (hire.createdAt ? new Date(hire.createdAt) : new Date());
     const formattedDate = !isNaN(dateObj.getTime())
       ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -48,28 +103,37 @@ const PaymentHistoryPage = () => {
     const formattedTime = !isNaN(dateObj.getTime())
       ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
       : '12:00 PM';
-    const cleanRef = String(hire.ref || hire.id || `DENO-${1000 + idx}`).replace('#', '');
+    const paddedIdx = String(idx + 1).padStart(9, '0');
+    const fallbackRef = `DENO-${paddedIdx.slice(0, 3)}-${paddedIdx.slice(3, 6)}-${paddedIdx.slice(6, 9)}`;
+    const cleanRef = String(hire.ref || hire.id || fallbackRef).replace('#', '');
     const subtotalVal = (priceNum / 1.08).toFixed(2);
     const vatVal = (priceNum * 0.08 / 1.08).toFixed(2);
+
+    const pickupLoc = hire.pickupLocation || hire.pickup || hire.route?.pickupLocation || 'Colombo International Airport (CMB)';
+    const dropoffLoc = hire.dropoffLocation || hire.dropoff || hire.route?.dropoffLocation || 'Kandy City Center';
+    const vehModel = hire.assignedAssetPreview || hire.vehicle || hire.vehicleModel || hire.vehicleName || 'Executive Luxury Fleet';
+    const vehPlate = hire.assignedVehicleNumber || hire.vehiclePlate || 'WP CAB - 8829';
+    const drvName = hire.assignedDriverName || hire.driver || hire.chauffeur || 'Dinusha Chandima';
+    const drvId = hire.assignedDriverId || hire.driverId || 'DENO-DRV-0000001';
 
     return {
       id: `#${cleanRef}`,
       invNo: `INV-${dateObj.getFullYear() || 2026}-${cleanRef}`,
       rctNo: `RCT-${dateObj.getFullYear() || 2026}-${cleanRef}-V`,
-      category: (hire.hireType === 'Corporate' || hire.category === 'Corporate') ? 'Corporate' : 'Personal',
+      category: (hire.hireType === 'Corporate' || hire.category === 'Corporate' || hire.corporate) ? 'Corporate' : 'Personal',
       tag: 'Completed & Settled',
-      tagType: (hire.hireType === 'Corporate' || hire.category === 'Corporate') ? 'gold' : 'normal',
+      tagType: (hire.hireType === 'Corporate' || hire.category === 'Corporate' || hire.corporate) ? 'gold' : 'normal',
       rawDate: hire.date || (hire.createdAt ? hire.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
       date: `${formattedDate} • ${formattedTime}`,
       settledTime: `${formattedTime} LKST`,
-      route: `${hire.pickup || 'Colombo'} ➔ ${hire.dropoff || 'Destination'}`,
-      origin: hire.pickup || 'Colombo, Sri Lanka',
-      destination: hire.dropoff || 'Destination, Sri Lanka',
-      vehicle: hire.vehicleName || hire.vehicle || 'Toyota Axio Executive (WP CAD-1922)',
-      chauffeur: hire.assignedDriverName || hire.driver || 'Certified VIP Chauffeur',
-      chauffeurId: hire.driverId || 'DENO-DRV-00001',
-      clientName: user?.fullName || user?.name || hire.name || 'Valued Passenger',
-      companyName: user?.companyName || user?.accountTier || 'Individual Client',
+      route: `${pickupLoc} ➔ ${dropoffLoc}`,
+      origin: pickupLoc,
+      destination: dropoffLoc,
+      vehicle: `${vehModel} (${vehPlate})`,
+      chauffeur: drvName,
+      chauffeurId: drvId,
+      clientName: user?.fullName || user?.name || hire.name || hire.customer || 'Valued Passenger',
+      companyName: user?.companyName || user?.accountTier || hire.corporate || 'Individual Client',
       clientAddress: user?.address || 'Sri Lanka',
       clientTin: user?.tin || 'N/A',
       vipTier: user?.accountTier || 'Individual / Guest',
@@ -79,9 +143,9 @@ const PaymentHistoryPage = () => {
       subtotal: subtotalVal,
       ssclTax: '0.00',
       vatTax: vatVal,
-      distance: hire.distance ? `${hire.distance} KM` : '45.0 KM',
+      distance: hire.distance ? (typeof hire.distance === 'string' && hire.distance.toLowerCase().includes('km') ? hire.distance : `${hire.distance} KM`) : '145.0 KM',
       taxInfo: 'Tax Settled (Includes 8% VAT)',
-      icon: (hire.pickup?.toLowerCase().includes('airport') || hire.dropoff?.toLowerCase().includes('airport')) ? 'flight' : 'car'
+      icon: (pickupLoc.toLowerCase().includes('airport') || dropoffLoc.toLowerCase().includes('airport')) ? 'flight' : 'car'
     };
   });
 

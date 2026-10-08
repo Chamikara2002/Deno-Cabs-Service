@@ -103,6 +103,18 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+.deno-admin-toggle-pill.fleet-drivers-pill {
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  color: #ffb800;
+  cursor: pointer;
+}
+
+.deno-admin-toggle-pill.fleet-drivers-pill:hover {
+  background: rgba(255, 184, 0, 0.15);
+  color: #ffb800;
+  border-color: #ffb800;
+}
+
 .deno-admin-pill-counter {
   background: #0b172a;
   color: #ffb800;

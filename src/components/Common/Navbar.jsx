@@ -166,7 +166,7 @@ const Navbar = () => {
                               </div>
                               <div className="notif-card-meta">
                                 <div className="notif-card-top">
-                                  <strong className="notif-ref-text">{hire.ref || hire.id || `#DENO-${85200 + idx}`}</strong>
+                                  <strong className="notif-ref-text">{hire.ref || hire.id || `#DENO-${String(idx + 1).padStart(9, '0').slice(0, 3)}-${String(idx + 1).padStart(9, '0').slice(3, 6)}-${String(idx + 1).padStart(9, '0').slice(6, 9)}`}</strong>
                                   <span className={`notif-status-tag ${isConfirmed ? 'confirmed' : isCancelled ? 'cancelled' : 'pending'}`}>
                                     {isConfirmed ? 'Chauffeur Confirmed' : (hire.status || 'Pending Approval')}
                                   </span>

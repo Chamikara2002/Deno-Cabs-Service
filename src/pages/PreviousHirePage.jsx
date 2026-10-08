@@ -45,7 +45,7 @@ const PreviousHirePage = () => {
   // Current active user's bookings list (Strictly user-isolated)
   const allUserHires = user ? (userHires || []) : [];
 
-  // Listen for real-time dispatch updates for this specific user
+  // Listen for real-time dispatch updates for this specific user & poll MongoDB every 3s
   useEffect(() => {
     const syncLiveDispatched = (e) => {
       if (e?.detail) {
@@ -63,17 +63,23 @@ const PreviousHirePage = () => {
     window.addEventListener('storage', syncLiveDispatched);
 
     // Live query from MongoDB backend scoped strictly to current user's email
-    if (user?.email) {
-      hireApi.getLatestBooking(user.email).then((res) => {
+    const fetchLatestBooking = async () => {
+      if (!user?.email) return;
+      try {
+        const res = await hireApi.getLatestBooking(user.email);
         if (res?.data) {
           setDispatchedData(res.data);
         }
-      }).catch((err) => {
-        console.warn('⚠️ [MongoDB Sync Notice]: Using local cached booking.', err.message);
-      });
-    }
+      } catch (err) {
+        // Fallback to local storage
+      }
+    };
+
+    fetchLatestBooking();
+    const interval = setInterval(fetchLatestBooking, 3000);
 
     return () => {
+      clearInterval(interval);
       window.removeEventListener('deno_user_hires_updated', syncLiveDispatched);
       window.removeEventListener('deno_dispatch_updated', syncLiveDispatched);
       window.removeEventListener('storage', syncLiveDispatched);
@@ -84,26 +90,59 @@ const PreviousHirePage = () => {
   const hasBookings = allUserHires && allUserHires.length > 0;
   const rawHire = hasBookings ? allUserHires[0] : null;
 
-  // Check if dispatchedData strictly belongs to THIS rawHire
+  // Check if dispatchedData strictly belongs to THIS rawHire or user
   const matchesDispatched = Boolean(
-    rawHire &&
     dispatchedData && (
-      (dispatchedData.id && String(dispatchedData.id).replace('#', '') === String(rawHire.id || rawHire.ref).replace('#', '')) ||
-      (dispatchedData.ref && (dispatchedData.ref === rawHire.ref || dispatchedData.ref === rawHire.id))
+      (rawHire && (
+        (dispatchedData.id && String(dispatchedData.id).replace('#', '') === String(rawHire.id || rawHire.ref).replace('#', '')) ||
+        (dispatchedData.ref && (dispatchedData.ref === rawHire.ref || dispatchedData.ref === rawHire.id))
+      )) ||
+      (user?.email && (
+        (dispatchedData.email && dispatchedData.email.toLowerCase() === user.email.toLowerCase()) ||
+        (dispatchedData.contactEmail && dispatchedData.contactEmail.toLowerCase() === user.email.toLowerCase())
+      ))
+    )
+  );
+
+  // Check if cancelled by Super Admin
+  const isCancelled = Boolean(
+    (rawHire?.status && rawHire.status.toLowerCase().includes('cancel')) ||
+    (matchesDispatched && dispatchedData?.status && dispatchedData.status.toLowerCase().includes('cancel')) ||
+    (matchesDispatched && dispatchedData?.badgeType === 'cancelled')
+  );
+
+  // Check if completed
+  const isCompleted = Boolean(
+    !isCancelled && (
+      (rawHire?.status && rawHire.status.toLowerCase().includes('complete')) ||
+      (matchesDispatched && dispatchedData?.status && dispatchedData.status.toLowerCase().includes('complete')) ||
+      rawHire?.paymentStatus === 'Paid' ||
+      dispatchedData?.paymentStatus === 'Paid'
     )
   );
 
   // Determine if booking has been confirmed & dispatched by Super Admin
   const isDispatched = Boolean(
-    rawHire && (
-      rawHire.dispatchConfirmed ||
-      rawHire.assignedDriverName ||
-      (rawHire.status && (
-        rawHire.status.toLowerCase().includes('confirm') || 
-        rawHire.status.toLowerCase().includes('active') ||
-        rawHire.status.toLowerCase().includes('dispatch')
+    !isCancelled && (
+      isCompleted ||
+      (rawHire && (
+        rawHire.dispatchConfirmed ||
+        rawHire.assignedDriverName ||
+        (rawHire.status && (
+          rawHire.status.toLowerCase().includes('confirm') || 
+          rawHire.status.toLowerCase().includes('active') ||
+          rawHire.status.toLowerCase().includes('dispatch')
+        ))
       )) ||
-      (matchesDispatched && dispatchedData.dispatchConfirmed)
+      (matchesDispatched && (
+        dispatchedData.dispatchConfirmed ||
+        dispatchedData.assignedDriverName ||
+        (dispatchedData.status && (
+          dispatchedData.status.toLowerCase().includes('confirm') || 
+          dispatchedData.status.toLowerCase().includes('active') ||
+          dispatchedData.status.toLowerCase().includes('dispatch')
+        ))
+      ))
     )
   );
 
@@ -111,17 +150,88 @@ const PreviousHirePage = () => {
     ...rawHire,
     ...(matchesDispatched && dispatchedData ? dispatchedData : {}),
     ...(rawHire.assignedDriverName ? rawHire : {})
-  } : null;
+  } : (matchesDispatched && dispatchedData ? dispatchedData : null);
 
-  const bookingId = activeBooking ? (activeBooking.ref || (activeBooking.id ? (activeBooking.id.startsWith('#') ? activeBooking.id : `#${activeBooking.id}`) : '#DENO-84920')) : '';
+  const bookingId = activeBooking ? (activeBooking.ref || (activeBooking.id ? (activeBooking.id.startsWith('#') ? activeBooking.id : `#${activeBooking.id}`) : '#DENO-000-000-001')) : '';
   const driverName = activeBooking?.assignedDriverName || activeBooking?.driverName || (isDispatched ? 'Dinusha Chandima' : '');
   const driverId = activeBooking?.assignedDriverId || activeBooking?.driverId || (isDispatched ? 'DENO-DRV-0000001' : '');
   const driverPhone = activeBooking?.assignedDriverPhone || activeBooking?.driverPhone || (isDispatched ? '+94 77 458 5471' : '');
   const vehiclePlate = activeBooking?.assignedVehicleNumber || (activeBooking?.vehiclePlate && activeBooking?.vehiclePlate !== 'Pending Allocation' ? activeBooking.vehiclePlate : (isDispatched ? 'WP CAB - 8829' : 'Pending Allocation'));
   const vehicleColor = activeBooking?.assignedVehicleColor || activeBooking?.vehicleColor || 'Pearl Metallic Black';
-  const vehicleModel = activeBooking?.assignedAssetPreview || activeBooking?.vehicle || activeBooking?.vehicleModel || 'Executive Class Fleet';
+  const vehicleModel = activeBooking?.assignedAssetPreview || activeBooking?.vehicle || activeBooking?.vehicleModel || 'Toyota Land Cruiser V8';
   const assetCode = activeBooking?.assignedAssetCode || '#V8-EXEC-01';
-  const dispatchedAt = activeBooking?.dispatchedAt || 'Today, 10:45 AM';
+  const dispatchedAt = activeBooking?.dispatchedAt || ('Today, ' + (activeBooking?.updatedAt ? new Date(activeBooking.updatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '10:45 AM'));
+
+  // Trip completion action handler
+  const [isCompletingTrip, setIsCompletingTrip] = useState(false);
+
+  const handleMarkTripCompleted = async () => {
+    if (!activeBooking) return;
+    setIsCompletingTrip(true);
+
+    const bookingRefOrId = activeBooking.ref || activeBooking.id || activeBooking.bookingId;
+    const completedTimestamp = 'Today, ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    const completedPayload = {
+      ...activeBooking,
+      status: 'Completed',
+      paymentStatus: 'Paid',
+      badgeType: 'completed',
+      completedAt: completedTimestamp,
+      dispatchedAt: activeBooking.dispatchedAt || completedTimestamp,
+      dispatchConfirmed: true,
+      statusCode: 'completed'
+    };
+
+    // 1. Update MongoDB backend
+    try {
+      await hireApi.updateStatus(bookingRefOrId, 'Completed');
+    } catch (err) {
+      console.warn('Backend updateStatus note:', err.message);
+    }
+
+    // 2. Sync localStorage ledgers
+    try {
+      const savedLedger = localStorage.getItem('deno_all_hires_ledger') || localStorage.getItem('deno_dispatch_bookings');
+      let ledger = savedLedger ? JSON.parse(savedLedger) : [];
+      let foundIndex = ledger.findIndex(
+        (h) => h.id === activeBooking.id || h.ref === activeBooking.ref || (h.id && activeBooking.id && String(h.id).replace('#', '') === String(activeBooking.id).replace('#', ''))
+      );
+
+      if (foundIndex !== -1) {
+        ledger[foundIndex] = { ...ledger[foundIndex], ...completedPayload };
+      } else {
+        ledger = [completedPayload, ...ledger];
+      }
+
+      localStorage.setItem('deno_all_hires_ledger', JSON.stringify(ledger));
+      localStorage.setItem('deno_dispatch_bookings', JSON.stringify(ledger));
+      localStorage.setItem('deno_latest_dispatched_hire', JSON.stringify(completedPayload));
+
+      if (user?.email) {
+        const userHiresKey = `deno_user_hires_${user.email.toLowerCase().trim()}`;
+        const userSaved = localStorage.getItem(userHiresKey);
+        let userList = userSaved ? JSON.parse(userSaved) : [];
+        const uIdx = userList.findIndex((h) => h.id === activeBooking.id || h.ref === activeBooking.ref);
+        if (uIdx !== -1) {
+          userList[uIdx] = { ...userList[uIdx], ...completedPayload };
+        } else {
+          userList = [completedPayload, ...userList];
+        }
+        localStorage.setItem(userHiresKey, JSON.stringify(userList));
+        localStorage.setItem('deno_user_hires', JSON.stringify(userList));
+      }
+
+      window.dispatchEvent(new CustomEvent('deno_user_hires_updated', { detail: completedPayload }));
+      window.dispatchEvent(new CustomEvent('deno_dispatch_updated', { detail: completedPayload }));
+      window.dispatchEvent(new Event('storage'));
+    } catch (e) {
+      console.error('Error updating completed booking:', e);
+    }
+
+    setDispatchedData(completedPayload);
+    setIsCompletingTrip(false);
+  };
 
   const getColorHex = (color = '') => {
     const c = color.toLowerCase();
@@ -136,26 +246,52 @@ const PreviousHirePage = () => {
 
   // User-scoped history list (strictly this user's bookings only!)
   const userHistoryList = allUserHires.map((item, idx) => {
-    const isConfirmed = Boolean(
-      item.dispatchConfirmed || 
-      (matchesDispatched && dispatchedData?.dispatchConfirmed && (item.id === rawHire?.id || item.ref === rawHire?.ref))
+    const isItemCancelled = Boolean(
+      (item.status && item.status.toLowerCase().includes('cancel')) ||
+      (matchesDispatched && dispatchedData?.status && dispatchedData.status.toLowerCase().includes('cancel') && (item.id === rawHire?.id || item.ref === rawHire?.ref))
     );
-    const displayStatus = isConfirmed 
+
+    const isItemCompleted = Boolean(
+      !isItemCancelled && (
+        (item.status && item.status.toLowerCase().includes('complete')) ||
+        (matchesDispatched && dispatchedData?.status && dispatchedData.status.toLowerCase().includes('complete') && (item.id === rawHire?.id || item.ref === rawHire?.ref)) ||
+        item.paymentStatus === 'Paid'
+      )
+    );
+
+    const isConfirmed = !isItemCancelled && (
+      isItemCompleted ||
+      Boolean(
+        item.dispatchConfirmed || 
+        (matchesDispatched && dispatchedData?.dispatchConfirmed && (item.id === rawHire?.id || item.ref === rawHire?.ref))
+      )
+    );
+
+    const displayStatus = isItemCancelled 
+      ? 'Cancelled'
+      : isItemCompleted
+      ? 'Completed'
+      : isConfirmed 
       ? 'Confirmed & Dispatched' 
-      : (item.status === 'Completed' ? 'Completed' : 'Pending Approval');
+      : 'Pending Approval';
 
     const assignedDName = item.assignedDriverName || (matchesDispatched && dispatchedData?.assignedDriverName) || 'Dinusha Chandima';
     const assignedDId = item.assignedDriverId || (matchesDispatched && dispatchedData?.assignedDriverId) || 'DENO-DRV-0000001';
 
+    const paddedIdx = String(idx + 1).padStart(9, '0');
+    const fallbackId = `#DENO-${paddedIdx.slice(0, 3)}-${paddedIdx.slice(3, 6)}-${paddedIdx.slice(6, 9)}`;
+
     return {
-      id: item.ref || (item.id ? (item.id.startsWith('#') ? item.id : `#${item.id}`) : `#DENO-${85200 + idx}`),
-      vehicle: item.vehicle || item.vehicleModel || 'Executive Luxury Fleet',
+      id: item.ref || (item.id ? (item.id.startsWith('#') ? item.id : `#${item.id}`) : fallbackId),
+      vehicle: item.assignedAssetPreview || item.vehicle || item.vehicleModel || 'Executive Luxury Fleet',
       status: displayStatus,
-      statusCode: isConfirmed ? 'active' : (item.status === 'Completed' ? 'completed' : 'pending'),
+      statusCode: isItemCancelled ? 'cancelled' : isItemCompleted ? 'completed' : isConfirmed ? 'active' : 'pending',
       pickupLocation: item.pickupLocation || 'Colombo 03',
       dropoffLocation: item.dropoffLocation || 'Kandy City',
       date: item.hireDate || item.scheduleDate || 'Today',
-      driver: isConfirmed 
+      driver: isItemCancelled
+        ? 'Cancelled by Super Admin'
+        : isConfirmed 
         ? `${assignedDName} (ID: ${assignedDId})` 
         : 'Pending Super Admin Allocation',
       fare: item.estimatedFare || (typeof item.totalLKR === 'number' ? `LKR ${item.totalLKR.toLocaleString()}` : 'LKR 45,000')
@@ -172,6 +308,7 @@ const PreviousHirePage = () => {
 
   const totalCompleted = userHistoryList.filter(i => i.statusCode === 'completed').length;
   const totalPending = userHistoryList.filter(i => i.statusCode === 'pending' || i.statusCode === 'active').length;
+  const totalCancelled = userHistoryList.filter(i => i.statusCode === 'cancelled').length;
 
   return (
     <div className="prev-hire-page-container">
@@ -233,7 +370,15 @@ const PreviousHirePage = () => {
                   <span className="status-card-tag">CURRENT BOOKING STATUS</span>
                   <div className="ref-code-row">
                     <h2 className="ref-code-title">{bookingId}</h2>
-                    {isDispatched ? (
+                    {isCancelled ? (
+                      <span className="status-pill cancelled">
+                        ● Cancelled by Admin
+                      </span>
+                    ) : isCompleted ? (
+                      <span className="status-pill completed">
+                        ● Trip Completed & Paid
+                      </span>
+                    ) : isDispatched ? (
                       <span className="status-pill confirmed">
                         ● Confirmed & Dispatched
                       </span>
@@ -244,7 +389,11 @@ const PreviousHirePage = () => {
                     )}
                   </div>
                 </div>
-                {isDispatched ? (
+                {isCancelled ? (
+                  <span className="dispatch-queued-tag cancelled">● Hire Cancelled</span>
+                ) : isCompleted ? (
+                  <span className="dispatch-queued-tag completed">● Trip Reconciled</span>
+                ) : isDispatched ? (
                   <span className="dispatch-queued-tag active">● Chauffeur En Route</span>
                 ) : (
                   <span className="dispatch-queued-tag">● Dispatch Queued</span>
@@ -259,7 +408,7 @@ const PreviousHirePage = () => {
                     <div className="milestone-badge green">
                       <Check size={14} />
                     </div>
-                    <div className={`milestone-line ${isDispatched ? 'green-line' : ''}`} />
+                    <div className={`milestone-line ${isCancelled ? 'red-line' : (isDispatched || isCompleted) ? 'green-line' : ''}`} />
                   </div>
                   <div className="milestone-content">
                     <div className="milestone-title-row">
@@ -274,14 +423,32 @@ const PreviousHirePage = () => {
                   </div>
                 </div>
 
-                {/* Step 2: Confirm & Dispatch */}
-                {isDispatched ? (
+                {/* Step 2: Confirm & Dispatch / Cancelled */}
+                {isCancelled ? (
+                  <div className="milestone-item active completed">
+                    <div className="milestone-left-col">
+                      <div className="milestone-badge red">
+                        <AlertTriangle size={14} />
+                      </div>
+                      <div className="milestone-line red-line" />
+                    </div>
+                    <div className="milestone-content">
+                      <div className="milestone-title-row">
+                        <strong className="text-red">2. Hire Request Cancelled</strong>
+                        <span className="milestone-time red-time">Cancelled</span>
+                      </div>
+                      <p>
+                        This hire request was cancelled by Super Admin dispatch. Please contact customer support or place a new booking.
+                      </p>
+                    </div>
+                  </div>
+                ) : isDispatched || isCompleted ? (
                   <div className="milestone-item active completed">
                     <div className="milestone-left-col">
                       <div className="milestone-badge green">
                         <Check size={14} />
                       </div>
-                      <div className="milestone-line" />
+                      <div className={`milestone-line ${isCompleted ? 'green-line' : ''}`} />
                     </div>
                     <div className="milestone-content">
                       <div className="milestone-title-row">
@@ -314,48 +481,155 @@ const PreviousHirePage = () => {
                 )}
 
                 {/* Step 3 */}
-                <div className="milestone-item upcoming">
-                  <div className="milestone-left-col">
-                    <div className="milestone-badge grey">
-                      3
+                {isCancelled ? (
+                  <div className="milestone-item upcoming">
+                    <div className="milestone-left-col">
+                      <div className="milestone-badge grey">
+                        3
+                      </div>
+                    </div>
+                    <div className="milestone-content">
+                      <div className="milestone-title-row">
+                        <strong>3. Trip Closed / Cancelled</strong>
+                        <span className="milestone-time">Closed</span>
+                      </div>
+                      <p>
+                        Dispatch processing closed due to booking cancellation by Super Admin.
+                      </p>
                     </div>
                   </div>
-                  <div className="milestone-content">
-                    <div className="milestone-title-row">
-                      <strong>3. Trip Completed & Reconciled</strong>
-                      <span className="milestone-time">Upcoming</span>
+                ) : isCompleted ? (
+                  <div className="milestone-item active completed">
+                    <div className="milestone-left-col">
+                      <div className="milestone-badge green">
+                        <Check size={14} />
+                      </div>
                     </div>
-                    <p>
-                      Trip successfully completed, corporate travel manifest logged, and payment reconciled.
-                    </p>
+                    <div className="milestone-content">
+                      <div className="milestone-title-row">
+                        <strong>3. Trip Completed & Reconciled</strong>
+                        <span className="milestone-time green-time">{activeBooking.completedAt || 'Today, Completed'}</span>
+                      </div>
+                      <p>
+                        Trip successfully completed, corporate travel manifest logged, and tax invoice generated in Payment History.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="milestone-item upcoming">
+                    <div className="milestone-left-col">
+                      <div className="milestone-badge grey">
+                        3
+                      </div>
+                    </div>
+                    <div className="milestone-content">
+                      <div className="milestone-title-row">
+                        <strong>3. Trip Completed & Reconciled</strong>
+                        <span className="milestone-time">Upcoming</span>
+                      </div>
+                      <p>
+                        Trip successfully completed, corporate travel manifest logged, and payment reconciled.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Route Details Box (Stacked & Centered: Route -> Pickup Schedule -> Estimated Fare) */}
+              <div className="route-details-grey-box">
+                {/* 1. ROUTE */}
+                <div className="route-detail-row route-item">
+                  <div className="detail-header-center">
+                    <span className="detail-label-pill">
+                      <MapPin size={13} className="pill-icon" /> Route
+                    </span>
+                  </div>
+                  <div className="detail-val-center route-val">
+                    <span className="route-loc pickup">{activeBooking.pickupLocation}</span>
+                    <span className="route-arrow-icon">➔</span>
+                    <span className="route-loc dropoff">{activeBooking.dropoffLocation}</span>
+                  </div>
+                </div>
+
+                {/* 2. PICKUP SCHEDULE */}
+                <div className="route-detail-row schedule-item">
+                  <div className="detail-header-center">
+                    <span className="detail-label-pill">
+                      <Calendar size={13} className="pill-icon" /> Pickup Schedule
+                    </span>
+                  </div>
+                  <div className="detail-val-center schedule-val">
+                    <span className="schedule-date-badge">{activeBooking.scheduleDate || activeBooking.hireDate || 'Today'}</span>
+                    <span className="schedule-dot">•</span>
+                    <span className="schedule-time-badge">{activeBooking.scheduleTime || activeBooking.hireTime || '10:30 AM'}</span>
+                  </div>
+                </div>
+
+                {/* 3. ESTIMATED FARE (Highlighted & Prominent) */}
+                <div className="route-detail-row fare-item">
+                  <div className="detail-header-center">
+                    <span className="detail-label-pill fare-pill">
+                      <FileText size={13} className="pill-icon" /> Estimated Fare
+                    </span>
+                  </div>
+                  <div className="fare-highlight-box">
+                    <span className="fare-currency-tag">TOTAL CONFIRMED FARE</span>
+                    <strong className="detail-val fare-large">
+                      {activeBooking.estimatedFare || (typeof activeBooking.totalLKR === 'number'
+                        ? `LKR ${activeBooking.totalLKR.toLocaleString()}`
+                        : 'LKR 28,500')}
+                    </strong>
+                    <span className="fare-sub-note">✓ All-Inclusive Luxury Tariff • Taxes Included</span>
                   </div>
                 </div>
               </div>
 
-              {/* Route Details Box */}
-              <div className="route-details-grey-box">
-                <div className="route-detail-col">
-                  <span className="detail-label">Route</span>
-                  <strong className="detail-val">{activeBooking.pickupLocation} ➔ {activeBooking.dropoffLocation}</strong>
+              {/* TRIP COMPLETED BUTTON / SUCCESS STRIP */}
+              {!isCancelled && (
+                <div className="trip-status-action-container">
+                  {!isCompleted ? (
+                    <button
+                      id="btn-trip-completed"
+                      className="btn-mark-trip-completed"
+                      onClick={handleMarkTripCompleted}
+                      disabled={isCompletingTrip}
+                      title="Mark this hire journey as completed and populate Payment History"
+                    >
+                      <CheckCircle size={18} />
+                      <span>{isCompletingTrip ? 'Finalizing Journey & Settling Invoice...' : 'Trip Completed'}</span>
+                    </button>
+                  ) : (
+                    <div className="trip-completed-success-strip" id="trip-completed-banner">
+                      <div className="completed-badge-icon">
+                        <Check size={20} />
+                      </div>
+                      <div className="completed-meta">
+                        <strong>Trip Successfully Completed & Settled!</strong>
+                        <span>Receipt & Tax Invoice {bookingId?.startsWith('#') ? bookingId : `#${bookingId}`} recorded in your Payment History.</span>
+                      </div>
+                      <button 
+                        id="btn-view-payment-history"
+                        className="btn-view-payment-history"
+                        onClick={() => navigate('/payment-history')}
+                        title="Open Payment History to view official Tax Invoice & Receipt"
+                      >
+                        <FileText size={15} /> View in Payment History ➔
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <div className="route-detail-col">
-                  <span className="detail-label">Pickup Schedule</span>
-                  <strong className="detail-val">{activeBooking.scheduleDate || activeBooking.hireDate || 'Today'}, {activeBooking.scheduleTime || activeBooking.hireTime || '10:30 AM'}</strong>
-                </div>
-                <div className="route-detail-col">
-                  <span className="detail-label">Estimated Fare</span>
-                  <strong className="detail-val fare">
-                    {activeBooking.estimatedFare || (typeof activeBooking.totalLKR === 'number'
-                      ? `LKR ${activeBooking.totalLKR.toLocaleString()}`
-                      : 'LKR 28,500')}
-                  </strong>
-                </div>
-              </div>
+              )}
 
               {/* Card Footer Bar */}
               <div className="status-card-footer">
-                <span className={`eta-allocation-text ${isDispatched ? 'text-emerald' : ''}`}>
-                  {isDispatched ? '⚡ Live Dispatch: Chauffeur Assigned & En Route' : '⏱️ ETA Allocation: ~8 mins'}
+                <span className={`eta-allocation-text ${isCancelled ? 'text-red' : isCompleted ? 'text-emerald' : isDispatched ? 'text-emerald' : ''}`}>
+                  {isCancelled 
+                    ? '❌ Hire Status: Cancelled by Super Admin Dispatch'
+                    : isCompleted
+                    ? '✅ Trip Completed: Payment Settled & Archived'
+                    : isDispatched 
+                    ? '⚡ Live Dispatch: Chauffeur Assigned & En Route' 
+                    : '⏱️ ETA Allocation: ~8 mins'}
                 </span>
                 <button className="refresh-status-btn" onClick={() => window.location.reload()}>
                   <RefreshCw size={14} /> Refresh Live Status
@@ -370,7 +644,11 @@ const PreviousHirePage = () => {
                   <span className="allocation-tag">EXECUTIVE FLEET ALLOCATION</span>
                   <h2 className="allocation-title">Allocated Driver & Vehicle</h2>
                 </div>
-                {isDispatched ? (
+                {isCancelled ? (
+                  <span className="chauffeur-cancelled-pill">
+                    <AlertTriangle size={14} /> Request Cancelled
+                  </span>
+                ) : isDispatched ? (
                   <span className="chauffeur-assigned-pill">
                     <CheckCircle size={14} /> Chauffeur Assigned
                   </span>
@@ -381,8 +659,26 @@ const PreviousHirePage = () => {
                 )}
               </div>
 
-              {/* Chauffeur Card: Dispatched vs Pending */}
-              {isDispatched ? (
+              {/* Chauffeur Card: Dispatched vs Cancelled vs Pending */}
+              {isCancelled ? (
+                <div className="chauffeur-info-box cancelled">
+                  <div className="chauffeur-avatar-cancelled">
+                    <AlertTriangle size={22} color="#dc2626" />
+                  </div>
+                  <div className="chauffeur-details">
+                    <div className="chauffeur-name-row">
+                      <strong className="driver-name-highlight text-red">Dispatch Cancelled</strong>
+                      <span className="sens-tag cancelled">SUPER ADMIN CANCELLED</span>
+                    </div>
+                    <div className="chauffeur-sub-row">
+                      <span className="pending-sub text-red-dim">This hire request has been cancelled. No driver or vehicle is assigned.</span>
+                    </div>
+                  </div>
+                  <span className="chauffeur-phone-pill cancelled">
+                    <Phone size={14} /> Cancelled
+                  </span>
+                </div>
+              ) : isDispatched ? (
                 <div className="chauffeur-info-box assigned">
                   <div className="chauffeur-avatar-assigned">
                     <User size={22} color="#0f172a" />
@@ -434,11 +730,15 @@ const PreviousHirePage = () => {
               {/* Assigned Vehicle Box */}
               <div className="assigned-vehicle-box">
                 <span className="assigned-veh-sub">
-                  {isDispatched ? 'ALLOCATED FLEET ASSET' : 'REQUESTED VEHICLE'}
+                  {isCancelled ? 'REQUESTED VEHICLE (CANCELLED)' : isDispatched ? 'ALLOCATED FLEET ASSET' : 'REQUESTED VEHICLE'}
                 </span>
                 <div className="assigned-veh-title-row">
                   <h3>{vehicleModel}</h3>
-                  {isDispatched ? (
+                  {isCancelled ? (
+                    <span className="license-plate-pill cancelled">
+                      ❌ Booking Cancelled
+                    </span>
+                  ) : isDispatched ? (
                     <span className="license-plate-pill allocated">
                       🚘 {vehiclePlate}
                     </span>
@@ -449,7 +749,7 @@ const PreviousHirePage = () => {
                   )}
                 </div>
                 <div className="veh-specs-grid">
-                  {isDispatched && (
+                  {isDispatched && !isCancelled && (
                     <>
                       <span className="veh-spec-item color-spec">
                         <span className="color-dot-indicator" style={{ backgroundColor: getColorHex(vehicleColor) }} />
@@ -478,7 +778,15 @@ const PreviousHirePage = () => {
 
               {/* Action Buttons Row */}
               <div className="allocation-actions-row">
-                {isDispatched ? (
+                {isCancelled ? (
+                  <button 
+                    className="act-btn-yellow"
+                    onClick={() => navigate('/hire')}
+                    title="Book a new hire journey"
+                  >
+                    <Navigation size={16} /> Book New Luxury Chauffeur ➔
+                  </button>
+                ) : isDispatched ? (
                   <a 
                     href={`tel:${driverPhone.replace(/\s+/g, '')}`} 
                     className="act-btn-yellow" 
@@ -537,7 +845,7 @@ const PreviousHirePage = () => {
                 className={`tab-btn ${filterTab === 'Cancelled' ? 'active' : ''}`}
                 onClick={() => setFilterTab('Cancelled')}
               >
-                Cancelled (0)
+                Cancelled ({totalCancelled})
               </button>
             </div>
           </div>
@@ -560,7 +868,9 @@ const PreviousHirePage = () => {
                   <div className="history-card-main-info">
                     <div className="history-title-line">
                       <strong className="veh-title">{item.vehicle}</strong>
-                      {item.statusCode === 'pending' ? (
+                      {item.statusCode === 'cancelled' ? (
+                        <span className="history-status-red">● {item.status}</span>
+                      ) : item.statusCode === 'pending' ? (
                         <span className="history-status-yellow">● {item.status}</span>
                       ) : item.statusCode === 'active' ? (
                         <span className="history-status-blue">● {item.status}</span>
@@ -585,10 +895,14 @@ const PreviousHirePage = () => {
                     </span>
                     <strong className="fare-value">{item.fare}</strong>
                     <div className="history-actions">
-                      <button className="invoice-btn">
+                      <button 
+                        className="invoice-btn"
+                        onClick={() => navigate('/payment-history')}
+                        title="View Tax Invoice in Payment History"
+                      >
                         <FileText size={14} /> Invoice
                       </button>
-                      <button className="rebook-btn">
+                      <button className="rebook-btn" onClick={() => navigate('/hire')}>
                         <RotateCcw size={14} /> Rebook
                       </button>
                     </div>

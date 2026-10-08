@@ -11,7 +11,9 @@ import {
   ShieldCheck, 
   ExternalLink,
   Activity,
-  Layers
+  Layers,
+  UserCheck,
+  Users
 } from 'lucide-react';
 import '../css/SuperAdminTopNav.css';
 
@@ -19,7 +21,8 @@ const SuperAdminTopNav = ({
   activeTab, 
   setActiveTab, 
   totalBookingsCount, 
-  onSimulateInboundHire 
+  onSimulateInboundHire,
+  onManageDrivers 
 }) => {
   const { 
     adminCredentials, 
@@ -46,7 +49,7 @@ const SuperAdminTopNav = ({
           </div>
         </div>
 
-        {/* Center: Module View Switchers (All Bookings / Dispatch Console) */}
+        {/* Center: Module View Switchers (All Bookings / Dispatch Console / Fleet Drivers) */}
         <div className="deno-admin-center-controls">
           <button
             className={`deno-admin-toggle-pill ${activeTab === 'all' ? 'active-gold' : ''}`}
@@ -63,6 +66,15 @@ const SuperAdminTopNav = ({
           >
             <Layers size={16} />
             <span>Dispatch Console</span>
+          </button>
+
+          <button
+            className="deno-admin-toggle-pill fleet-drivers-pill"
+            onClick={onManageDrivers}
+            title="Register & Manage Fleet Drivers across all browsers"
+          >
+            <Users size={16} />
+            <span>Manage Drivers</span>
           </button>
         </div>
 
@@ -143,6 +155,17 @@ const SuperAdminTopNav = ({
                 </div>
 
                 <div className="admin-dropdown-divider" />
+
+                <button
+                  className="admin-dropdown-item gold-hover"
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    if (onManageDrivers) onManageDrivers();
+                  }}
+                >
+                  <Users size={16} />
+                  <span>Manage Drivers Registry</span>
+                </button>
 
                 <button
                   className="admin-dropdown-item gold-hover"

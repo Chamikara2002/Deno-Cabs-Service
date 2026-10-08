@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { calculateDrivingRoute, findLocationByName, reverseGeocode } from '../../services/mapService';
@@ -81,19 +81,24 @@ const LeafletRouteMap = ({
   const routeLayerRef = useRef(null);
   const markersGroupRef = useRef(null);
 
+  // Stable refs for callbacks and dynamic selecting props to prevent map re-instantiation
+  const onLocationSelectedRef = useRef(onLocationSelected);
+  onLocationSelectedRef.current = onLocationSelected;
+
+  const selectingTargetRef = useRef(selectingTarget);
+  selectingTargetRef.current = selectingTarget;
+
+  const interactiveRef = useRef(interactive);
+  interactiveRef.current = interactive;
+
   const [routeInfo, setRouteInfo] = useState({
     distanceKm: 0,
     durationMinutes: 0,
     loading: false
   });
 
-  const [activePinCoords, setActivePinCoords] = useState({
-    pickup: null,
-    dropoff: null
-  });
-
-  // Resolve coordinate objects from text or props
-  useEffect(() => {
+  // Resolve coordinate objects from text or props with memoization
+  const activePinCoords = useMemo(() => {
     let pCoord = pickupCoords;
     if (!pCoord && pickupLocation) {
       const match = findLocationByName(pickupLocation);
@@ -106,19 +111,19 @@ const LeafletRouteMap = ({
       dCoord = { lat: match.lat, lng: match.lng, name: match.name };
     }
 
-    setActivePinCoords({
+    return {
       pickup: pCoord,
       dropoff: dCoord
-    });
-  }, [pickupLocation, dropoffLocation, pickupCoords, dropoffCoords]);
+    };
+  }, [pickupLocation, dropoffLocation, pickupCoords?.lat, pickupCoords?.lng, dropoffCoords?.lat, dropoffCoords?.lng]);
 
-  // 1. Initialize Map Instance
+  // 1. Initialize Map Instance EXACTLY ONCE on Mount
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
       // Default centered on Sri Lanka
-      const defaultCenter = [7.8731, 80.7718]; // Sri Lanka geographic center
+      const defaultCenter = [7.8731, 80.7718];
       const defaultZoom = 8;
 
       const map = L.map(mapContainerRef.current, {
@@ -131,7 +136,7 @@ const LeafletRouteMap = ({
         touchZoom: interactive
       });
 
-      // Tile Layer: Official 100% Free OpenStreetMap Standard (Zero API Key required)
+      // Tile Layer: Official OpenStreetMap Standard
       const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
       L.tileLayer(tileUrl, {
@@ -139,7 +144,7 @@ const LeafletRouteMap = ({
         subdomains: ['a', 'b', 'c']
       }).addTo(map);
 
-      // Attribution small banner in corner
+      // Attribution banner
       L.control
         .attribution({
           position: 'bottomright',
@@ -155,41 +160,49 @@ const LeafletRouteMap = ({
       markersGroupRef.current = markersGroup;
       mapInstanceRef.current = map;
 
-      // Handle map click for precise location selection
+      // Handle map click for precise location selection using latest refs
       map.on('click', async (e) => {
-        if (!interactive || !selectingTarget) return;
+        if (!interactiveRef.current || !selectingTargetRef.current) return;
 
         const { lat, lng } = e.latlng;
         const rev = await reverseGeocode(lat, lng);
 
-        if (onLocationSelected) {
-          onLocationSelected({
-            target: selectingTarget,
+        if (onLocationSelectedRef.current) {
+          onLocationSelectedRef.current({
+            target: selectingTargetRef.current,
             lat,
             lng,
-            name: rev.name,
-            address: rev.address
+            name: rev?.name || `Point (${lat.toFixed(4)}, ${lng.toFixed(4)})`,
+            address: rev?.address || ''
           });
         }
       });
+
+      // Force layout invalidation after DOM render
+      setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 200);
     }
 
     return () => {
-      // Cleanup on unmount
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, [theme, interactive, selectingTarget, onLocationSelected]);
+  }, []); // Run ONLY once on mount
 
-  // 2. Render Markers and Calculate Routing
+  // 2. Render Markers and Calculate Routing safely when coordinates change
   useEffect(() => {
     const map = mapInstanceRef.current;
     const routeLayer = routeLayerRef.current;
     const markersGroup = markersGroupRef.current;
 
     if (!map || !routeLayer || !markersGroup) return;
+
+    let isMounted = true;
 
     // Clear previous layers
     markersGroup.clearLayers();
@@ -217,8 +230,8 @@ const LeafletRouteMap = ({
         pMarker.on('dragend', async (e) => {
           const { lat, lng } = e.target.getLatLng();
           const rev = await reverseGeocode(lat, lng);
-          if (onLocationSelected) {
-            onLocationSelected({ target: 'pickup', lat, lng, name: rev.name, address: rev.address });
+          if (onLocationSelectedRef.current) {
+            onLocationSelectedRef.current({ target: 'pickup', lat, lng, name: rev?.name, address: rev?.address });
           }
         });
       }
@@ -245,8 +258,8 @@ const LeafletRouteMap = ({
         dMarker.on('dragend', async (e) => {
           const { lat, lng } = e.target.getLatLng();
           const rev = await reverseGeocode(lat, lng);
-          if (onLocationSelected) {
-            onLocationSelected({ target: 'dropoff', lat, lng, name: rev.name, address: rev.address });
+          if (onLocationSelectedRef.current) {
+            onLocationSelectedRef.current({ target: 'dropoff', lat, lng, name: rev?.name, address: rev?.address });
           }
         });
       }
@@ -259,14 +272,14 @@ const LeafletRouteMap = ({
       telemetryVehicles.forEach((veh) => {
         if (veh.lat && veh.lng) {
           const vMarker = L.marker([veh.lat, veh.lng], {
-            icon: createVehicleIcon(veh.plate, veh.status)
+            icon: createVehicleIcon(veh.name || veh.plate, veh.status)
           }).addTo(markersGroup);
 
           vMarker.bindPopup(`
             <div class="map-popup-card">
-              <strong style="color: #d97706;">🚖 ${veh.plate || 'Fleet Telemetry'}</strong>
-              <p>${veh.model || 'Executive Luxury Class'}</p>
-              <small>${veh.route || 'En-Route Expressway'}</small>
+              <strong style="color: #d97706;">🚖 ${veh.name || veh.plate || 'Fleet Telemetry'}</strong>
+              <p>${veh.chauffeur || 'Executive Luxury Class'}</p>
+              <small>${veh.status || 'En-Route'}</small>
             </div>
           `);
 
@@ -277,9 +290,9 @@ const LeafletRouteMap = ({
 
     // If both Pickup and Dropoff exist -> calculate driving route and draw road polyline
     if (pickup && dropoff && pickup.lat && dropoff.lat) {
-      setRouteInfo((prev) => ({ ...prev, loading: true }));
-
       calculateDrivingRoute(pickup, dropoff).then((route) => {
+        if (!isMounted || !mapInstanceRef.current || !routeLayerRef.current) return;
+
         if (route && route.coordinates && route.coordinates.length > 0) {
           // 1. Glow Background Line
           L.polyline(route.coordinates, {
@@ -288,7 +301,7 @@ const LeafletRouteMap = ({
             opacity: 0.55,
             lineCap: 'round',
             lineJoin: 'round'
-          }).addTo(routeLayer);
+          }).addTo(routeLayerRef.current);
 
           // 2. Main High-contrast Driving Route Line
           L.polyline(route.coordinates, {
@@ -297,7 +310,7 @@ const LeafletRouteMap = ({
             opacity: 0.95,
             dashArray: '1, 8',
             className: 'leaflet-animated-route'
-          }).addTo(routeLayer);
+          }).addTo(routeLayerRef.current);
 
           setRouteInfo({
             distanceKm: route.distanceKm,
@@ -305,30 +318,46 @@ const LeafletRouteMap = ({
             loading: false
           });
         }
-      });
+      }).catch((err) => console.warn('Route draw notice:', err.message));
     }
 
     // Auto-fit bounds
     if (boundsPoints.length > 1) {
-      const bounds = L.latLngBounds(boundsPoints);
-      map.fitBounds(bounds, {
-        padding: [40, 40],
-        maxZoom: 14,
-        animate: true
-      });
+      try {
+        const bounds = L.latLngBounds(boundsPoints);
+        map.fitBounds(bounds, {
+          padding: [35, 35],
+          maxZoom: 14,
+          animate: false
+        });
+      } catch {}
     } else if (boundsPoints.length === 1) {
-      map.setView(boundsPoints[0], 13, { animate: true });
+      try {
+        map.setView(boundsPoints[0], 13, { animate: false });
+      } catch {}
     }
-  }, [activePinCoords, showTelemetry, telemetryVehicles, selectingTarget, onLocationSelected, theme]);
 
-  // Recalculate size on container resize
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    activePinCoords.pickup?.lat, 
+    activePinCoords.pickup?.lng, 
+    activePinCoords.dropoff?.lat, 
+    activePinCoords.dropoff?.lng,
+    showTelemetry, 
+    theme,
+    selectingTarget
+  ]);
+
+  // Recalculate size on container resize or click
   const handleRecenter = () => {
     if (mapInstanceRef.current) {
       mapInstanceRef.current.invalidateSize();
       const { pickup, dropoff } = activePinCoords;
       if (pickup && dropoff && pickup.lat && dropoff.lat) {
         const bounds = L.latLngBounds([[pickup.lat, pickup.lng], [dropoff.lat, dropoff.lng]]);
-        mapInstanceRef.current.fitBounds(bounds, { padding: [40, 40] });
+        mapInstanceRef.current.fitBounds(bounds, { padding: [35, 35] });
       } else if (pickup && pickup.lat) {
         mapInstanceRef.current.setView([pickup.lat, pickup.lng], 13);
       }
@@ -401,4 +430,5 @@ const LeafletRouteMap = ({
   );
 };
 
-export default LeafletRouteMap;
+export default memo(LeafletRouteMap);
+

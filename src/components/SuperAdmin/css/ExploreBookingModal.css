@@ -1210,14 +1210,20 @@
 /* Standby Drivers Available */
 .standby-drivers-strip {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(10, 18, 35, 0.6);
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(10, 18, 35, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 0.74rem;
+  padding: 10px 12px;
+}
+
+.standby-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
+  gap: 8px;
 }
 
 .standby-lead {
@@ -1225,25 +1231,54 @@
   align-items: center;
   gap: 6px;
   color: #94a3b8;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.standby-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .standby-count {
   color: #ffb800;
   font-weight: 800;
+  font-size: 0.74rem;
+}
+
+.btn-quick-add-driver-pill {
+  background: rgba(255, 184, 0, 0.15);
+  border: 1px solid rgba(255, 184, 0, 0.35);
+  color: #ffb800;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.btn-quick-add-driver-pill:hover {
+  background: #ffb800;
+  color: #0b172a;
 }
 
 .standby-list {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
-  margin-left: auto;
 }
 
 .driver-pill {
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #cbd5e1;
-  padding: 2px 8px;
+  padding: 3px 8px;
   border-radius: 4px;
   font-size: 0.7rem;
   cursor: pointer;
@@ -1439,41 +1474,43 @@
   letter-spacing: 0.05em;
 }
 
-/* ================= NON-EDITABLE LOCKED DRIVER ID (BLOCKED CURSOR) ================= */
-.locked-driver-id-box {
-  background: rgba(9, 14, 26, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  cursor: not-allowed !important;
-  user-select: none !important;
+/* ================= EDITABLE DRIVER ID ================= */
+.driver-id-input-box {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.non-editable-blocked-input {
-  cursor: not-allowed !important;
+.driver-id-input-box:focus-within {
+  border-color: #ffb800;
+  box-shadow: 0 0 0 2px rgba(255, 184, 0, 0.2);
+}
+
+.editable-driver-id {
   color: #38bdf8 !important;
-  pointer-events: none !important;
-  user-select: none !important;
-  opacity: 0.85;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em;
 }
 
-.locked-badge-pill {
+.btn-auto-gen-id {
+  background: rgba(255, 184, 0, 0.12);
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  color: #ffb800;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.66rem;
-  font-weight: 700;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 2px 8px;
-  border-radius: 4px;
-  cursor: not-allowed;
-  flex-shrink: 0;
+  transition: all 0.2s;
 }
 
-.field-micro-hint {
-  font-size: 0.65rem;
-  color: #64748b;
+.btn-auto-gen-id:hover {
+  background: #ffb800;
+  color: #0b172a;
 }
+
 
 /* Phone combo */
 .phone-input-combo {

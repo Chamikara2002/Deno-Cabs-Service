@@ -96,6 +96,16 @@ export const hireApi = {
   },
 
   /**
+   * 6.1. Delete booking from MongoDB database
+   */
+  async deleteBooking(bookingId) {
+    const cleanId = bookingId ? bookingId.replace('#', '') : '';
+    return apiRequest(`/hires/${encodeURIComponent(cleanId)}`, {
+      method: 'DELETE'
+    });
+  },
+
+  /**
    * 7. Get dispatch and hire metrics for dashboard
    */
   async getMetrics() {
@@ -107,6 +117,37 @@ export const hireApi = {
    */
   async getDrivers() {
     return apiRequest('/drivers');
+  },
+
+  /**
+   * 8.1. Create a new driver
+   */
+  async createDriver(driverData) {
+    return apiRequest('/drivers', {
+      method: 'POST',
+      body: JSON.stringify(driverData)
+    });
+  },
+
+  /**
+   * 8.2. Update a driver
+   */
+  async updateDriver(driverId, driverData) {
+    const cleanId = driverId ? encodeURIComponent(driverId) : '';
+    return apiRequest(`/drivers/${cleanId}`, {
+      method: 'PUT',
+      body: JSON.stringify(driverData)
+    });
+  },
+
+  /**
+   * 8.3. Delete a driver
+   */
+  async deleteDriver(driverId) {
+    const cleanId = driverId ? encodeURIComponent(driverId) : '';
+    return apiRequest(`/drivers/${cleanId}`, {
+      method: 'DELETE'
+    });
   },
 
   /**
@@ -125,7 +166,52 @@ export const hireApi = {
       method: 'POST',
       body: JSON.stringify({ email, phone, otp })
     });
+  },
+
+  /**
+   * 11. Register new customer account in MongoDB database
+   */
+  async register(userData) {
+    return apiRequest('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData)
+    });
+  },
+
+  /**
+   * 12. Login customer or super admin against MongoDB database
+   */
+  async login({ usernameOrEmail, password }) {
+    return apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ usernameOrEmail, password })
+    });
+  },
+
+  /**
+   * 13. Get all registered users from MongoDB database
+   */
+  async getUsers() {
+    return apiRequest('/auth/users');
+  },
+
+  /**
+   * 14. Get Super Admin master credentials from MongoDB
+   */
+  async getAdminCredentials() {
+    return apiRequest('/auth/admin-credentials');
+  },
+
+  /**
+   * 15. Update Super Admin password in MongoDB
+   */
+  async updateAdminPassword(newPassword) {
+    return apiRequest('/auth/admin-password', {
+      method: 'PUT',
+      body: JSON.stringify({ newPassword })
+    });
   }
 };
 
 export default hireApi;
+

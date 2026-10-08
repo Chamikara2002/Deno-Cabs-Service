@@ -84,6 +84,8 @@ const AuthModal = () => {
   const [otpDigits, setOtpDigits] = useState(['', '', '', '']);
   const [otpError, setOtpError] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [otpSendStatus, setOtpSendStatus] = useState(null);
 
   const otpInputRefs = [useRef(), useRef(), useRef(), useRef()];
 
@@ -103,17 +105,13 @@ const AuthModal = () => {
     if (googlePrefill) {
       setRegisterData((prev) => ({
         ...prev,
-        fullName: '', // Kept empty for user to enter manually
-        email: googlePrefill.email || prev.email,
-        username: '' // Kept empty for user to enter manually
+        email: googlePrefill.email || prev.email
       }));
       setGoogleConnectedBanner(googlePrefill.email);
     } else if (prefilledEmail) {
       setRegisterData((prev) => ({
         ...prev,
-        fullName: '',
-        email: prefilledEmail.includes('@') ? prefilledEmail : prev.email,
-        username: ''
+        email: prefilledEmail.includes('@') ? prefilledEmail : prev.email
       }));
     }
   }, [prefilledEmail, googlePrefill]);
@@ -215,7 +213,7 @@ const AuthModal = () => {
   };
 
   // Unified Login Submit Handler
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
     setNotRegisteredAlert(null);
@@ -229,7 +227,7 @@ const AuthModal = () => {
       return;
     }
 
-    const result = login({
+    const result = await login({
       usernameOrEmail: cleanUsername,
       password: cleanPassword
     });
@@ -312,13 +310,6 @@ const AuthModal = () => {
       return;
     }
 
-    // Check if email already registered in system
-    const emailExists = registeredUsers.some((u) => u.email.toLowerCase() === cleanEmail);
-    if (emailExists) {
-      setFormError('An account with this email address already exists. Please Sign In.');
-      return;
-    }
-
     // Generate random 4-digit OTP code (e.g. 4829)
     const fourDigitOtp = Math.floor(1000 + Math.random() * 9000).toString();
     setGeneratedOtpCode(fourDigitOtp);
@@ -333,6 +324,8 @@ const AuthModal = () => {
     setOtpDigits(['', '', '', '']);
     setOtpError('');
     setResendCooldown(30);
+    setIsSendingOtp(true);
+    setOtpSendStatus(null);
 
     // Open 4-Digit OTP Popup
     setIsOtpVerificationModalOpen(true);
@@ -342,14 +335,22 @@ const AuthModal = () => {
       otpInputRefs[0]?.current?.focus();
     }, 150);
 
-    // Dispatch real email & SMS text message in background
+    // Dispatch real email & SMS text message
     try {
-      await hireApi.sendOtp({
+      const res = await hireApi.sendOtp({
         email: cleanEmail,
         phone: cleanPhone,
         otp: fourDigitOtp
       });
+      setIsSendingOtp(false);
+      if (res?.emailSent) {
+        setOtpSendStatus({ success: true, message: `✅ Verification email successfully delivered to ${cleanEmail}.` });
+      } else {
+        setOtpSendStatus({ success: false, message: res?.mailError || 'Email queued.' });
+      }
     } catch (err) {
+      setIsSendingOtp(false);
+      setOtpSendStatus({ success: false, message: 'Backend notice: Server offline or delayed.' });
       console.warn('Notice: Background OTP dispatch:', err.message);
     }
   };
@@ -398,6 +399,8 @@ const AuthModal = () => {
     setOtpDigits(['', '', '', '']);
     setOtpError('');
     setResendCooldown(30);
+    setIsSendingOtp(true);
+    setOtpSendStatus(null);
 
     const emailToUse = pendingRegistrationData?.email || registerData.email;
     const phoneToUse = pendingRegistrationData?.phone || registerData.phone;
@@ -407,18 +410,26 @@ const AuthModal = () => {
     }, 100);
 
     try {
-      await hireApi.sendOtp({
+      const res = await hireApi.sendOtp({
         email: emailToUse,
         phone: phoneToUse,
         otp: newCode
       });
+      setIsSendingOtp(false);
+      if (res?.emailSent) {
+        setOtpSendStatus({ success: true, message: `✅ New code dispatched to ${emailToUse}.` });
+      } else {
+        setOtpSendStatus({ success: false, message: res?.mailError || 'Code dispatched.' });
+      }
     } catch (err) {
+      setIsSendingOtp(false);
+      setOtpSendStatus({ success: false, message: 'Server delayed.' });
       console.warn('Notice: Background OTP resend:', err.message);
     }
   };
 
   // ================= STEP 2: CONFIRM OTP -> REGISTER & NAVIGATE TO LOGIN TAB =================
-  const handleVerifyOtpAndProceedToLogin = (e) => {
+  const handleVerifyOtpAndProceedToLogin = async (e) => {
     if (e) e.preventDefault();
     setOtpError('');
 
@@ -435,7 +446,7 @@ const AuthModal = () => {
     }
 
     // OTP Verified! Register customer into database / localStorage without auto-login
-    const result = register(pendingRegistrationData, false);
+    const result = await register(pendingRegistrationData, false);
 
     if (!result.success) {
       setOtpError(result.error || 'Registration failed. Please try again.');
@@ -896,6 +907,20 @@ const AuthModal = () => {
                   </span>
                 )}
               </div>
+
+              {/* Real-time Email Dispatch Status Banner */}
+              {isSendingOtp ? (
+                <div style={{ padding: '8px 12px', background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: '8px', color: '#38bdf8', fontSize: '0.8rem', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <RotateCcw size={13} className="animate-spin" />
+                  <span>Dispatching verification code via SMTP email & SMS...</span>
+                </div>
+              ) : otpSendStatus ? (
+                <div style={{ padding: '8px 12px', background: otpSendStatus.success ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 183, 0, 0.12)', border: `1px solid ${otpSendStatus.success ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 183, 0, 0.3)'}`, borderRadius: '8px', color: otpSendStatus.success ? '#10b981' : '#f5b700', fontSize: '0.8rem', marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <CheckCircle size={14} />
+                  <span>{otpSendStatus.message}</span>
+                </div>
+              ) : null}
+
               <p className="otp-check-inbox-hint">
                 📩 Please check your <strong>Email Inbox / Spam folder</strong> and <strong>Mobile SMS Text Messages</strong> for the 4-digit code.
               </p>

@@ -6,7 +6,8 @@ import {
   getLatestHireBooking,
   dispatchHireBooking,
   updateHireStatus,
-  getHireMetrics
+  getHireMetrics,
+  deleteHireBooking
 } from '../controllers/hireController.js';
 
 const router = express.Router();
@@ -23,7 +24,8 @@ router.route('/')
   .post(createHireBooking);
 
 router.route('/:id')
-  .get(getHireBookingById);
+  .get(getHireBookingById)
+  .delete(deleteHireBooking);
 
 // Dispatch & Status action endpoints
 router.put('/:id/dispatch', dispatchHireBooking);

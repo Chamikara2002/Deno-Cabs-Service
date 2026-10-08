@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useSuperAdmin } from '../../../context/SuperAdminAuthContext';
 import { 
   Search, 
   X, 
@@ -14,7 +15,8 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  Trash2
 } from 'lucide-react';
 import '../css/SuperAdminTable.css';
 
@@ -23,6 +25,7 @@ const SuperAdminTable = ({
   onExploreBooking, 
   onSimulateHire 
 }) => {
+  const { deleteBooking } = useSuperAdmin();
   const [filterStatus, setFilterStatus] = useState('All'); // 'All' | 'Pending' | 'Confirmed' | 'Cancelled'
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,30 +33,36 @@ const SuperAdminTable = ({
 
   // Filter and Search logic
   const filteredBookings = useMemo(() => {
+    if (!Array.isArray(bookings)) return [];
+
     return bookings.filter((item) => {
+      if (!item) return false;
+      const statusLower = (item.status || '').toLowerCase();
+
       // Status Filter
-      if (filterStatus === 'Pending' && !item.status.toLowerCase().includes('pending')) {
+      if (filterStatus === 'Pending' && !statusLower.includes('pending')) {
         return false;
       }
-      if (filterStatus === 'Confirmed' && !item.status.toLowerCase().includes('confirmed')) {
+      if (filterStatus === 'Confirmed' && !statusLower.includes('confirmed') && !statusLower.includes('active')) {
         return false;
       }
-      if (filterStatus === 'Cancelled' && !item.status.toLowerCase().includes('cancel')) {
+      if (filterStatus === 'Cancelled' && !statusLower.includes('cancel')) {
         return false;
       }
 
       // Search Filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const matchesRef = (item.ref || '').toLowerCase().includes(q);
-        const matchesCustomer = (item.customer || '').toLowerCase().includes(q);
-        const matchesCorporate = (item.corporate || '').toLowerCase().includes(q);
-        const matchesPickup = (item.pickupLocation || '').toLowerCase().includes(q);
-        const matchesDropoff = (item.dropoffLocation || '').toLowerCase().includes(q);
-        const matchesVehicle = (item.vehicleModel || '').toLowerCase().includes(q);
+        const matchesRef = (item.ref || item.id || '').toLowerCase().includes(q);
+        const matchesCustomer = (item.customer || item.name || item.fullName || '').toLowerCase().includes(q);
+        const matchesCorporate = (item.corporate || item.company || '').toLowerCase().includes(q);
+        const matchesPickup = (item.pickupLocation || item.pickup || '').toLowerCase().includes(q);
+        const matchesDropoff = (item.dropoffLocation || item.dropoff || '').toLowerCase().includes(q);
+        const matchesVehicle = (item.vehicleModel || item.vehicle || '').toLowerCase().includes(q);
         const matchesPlate = (item.vehiclePlate || '').toLowerCase().includes(q);
+        const matchesDriver = (item.assignedDriverName || item.chauffeur || '').toLowerCase().includes(q);
 
-        if (!matchesRef && !matchesCustomer && !matchesCorporate && !matchesPickup && !matchesDropoff && !matchesVehicle && !matchesPlate) {
+        if (!matchesRef && !matchesCustomer && !matchesCorporate && !matchesPickup && !matchesDropoff && !matchesVehicle && !matchesPlate && !matchesDriver) {
           return false;
         }
       }
@@ -322,14 +331,39 @@ const SuperAdminTable = ({
 
                     {/* 8. Action */}
                     <td className="td-action text-right">
-                      <button
-                        className="deno-explore-btn"
-                        onClick={() => onExploreBooking(row)}
-                        title="View manifest, driver assignment & route telemetry"
-                      >
-                        <span>Explore</span>
-                        <ArrowRight size={14} className="explore-arrow" />
-                      </button>
+                      <div className="table-actions-group" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <button
+                          className="deno-explore-btn"
+                          onClick={() => onExploreBooking(row)}
+                          title="View manifest, driver assignment & route telemetry"
+                        >
+                          <span>Explore</span>
+                          <ArrowRight size={14} className="explore-arrow" />
+                        </button>
+                        <button
+                          className="deno-delete-row-btn"
+                          onClick={() => {
+                            if (window.confirm(`Delete booking ${row.ref || row.id} from database?`)) {
+                              deleteBooking(row.id || row.ref);
+                            }
+                          }}
+                          title="Permanently delete booking from database"
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.12)',
+                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                            color: '#ef4444',
+                            padding: '6px 8px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

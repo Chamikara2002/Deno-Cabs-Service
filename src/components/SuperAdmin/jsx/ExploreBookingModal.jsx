@@ -37,7 +37,8 @@ import {
   Lock,
   Building2,
   CreditCard,
-  Copy
+  Copy,
+  Trash2
 } from 'lucide-react';
 import LeafletRouteMap from '../../Common/LeafletRouteMap';
 import '../css/ExploreBookingModal.css';
@@ -52,13 +53,13 @@ const DEFAULT_VALUES = {
   vehicleColor: 'Pearl Metallic Black'
 };
 
-const ExploreBookingModal = ({ booking, onClose }) => {
-  const { updateBookingStatus } = useSuperAdmin();
+const ExploreBookingModal = ({ booking, onClose, onOpenManageDrivers }) => {
+  const { updateBookingStatus, deleteBooking } = useSuperAdmin();
 
   // Normalize and extract all dynamic customer booking data with reliable fallbacks
   const data = {
-    id: booking?.id || booking?.bookingId || 'DENO-84920',
-    ref: booking?.ref || (booking?.id ? (booking.id.startsWith('#') ? booking.id : `#${booking.id}`) : '#DENO-84920'),
+    id: booking?.id || booking?.bookingId || 'DENO-000-000-001',
+    ref: booking?.ref || (booking?.id ? (booking.id.startsWith('#') ? booking.id : `#${booking.id}`) : '#DENO-000-000-001'),
     customer: booking?.customer || booking?.fullName || booking?.name || 'Valued Guest',
     corporate: booking?.corporate || booking?.company || (booking?.accountTier && booking?.accountTier !== 'Individual / Guest' ? booking.accountTier : 'Private Executive Client'),
     pickupLocation: booking?.pickupLocation || 'Colombo International Airport (CMB)',
@@ -255,6 +256,13 @@ const ExploreBookingModal = ({ booking, onClose }) => {
     if (window.confirm(`Are you sure you want to cancel hire ${data.ref} for ${data.customer}?`)) {
       updateBookingStatus(data.id, 'Cancelled');
       setCurrentStatus('Cancelled');
+      onClose();
+    }
+  };
+
+  const handleDeleteBooking = () => {
+    if (window.confirm(`Are you sure you want to permanently delete booking ${data.ref} (${data.customer}) from the database?`)) {
+      deleteBooking(data.id || data.ref);
       onClose();
     }
   };
@@ -638,13 +646,27 @@ const ExploreBookingModal = ({ booking, onClose }) => {
 
               {/* Standby Drivers Available Strip */}
               <div className="standby-drivers-strip">
-                <div className="standby-lead">
-                  <User size={15} />
-                  <span>Standby Chauffeurs Available:</span>
+                <div className="standby-header-top">
+                  <div className="standby-lead">
+                    <User size={15} />
+                    <span>Standby Chauffeurs Available:</span>
+                  </div>
+                  <div className="standby-actions-group">
+                    <span className="standby-count">{standbyDrivers.length} Active</span>
+                    {onOpenManageDrivers && (
+                      <button
+                        type="button"
+                        className="btn-quick-add-driver-pill"
+                        onClick={onOpenManageDrivers}
+                        title="Add or Manage Drivers in Registry"
+                      >
+                        <Plus size={12} /> Add / Manage
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <span className="standby-count">{standbyDrivers.length} Active</span>
                 <div className="standby-list">
-                  {standbyDrivers.slice(0, 4).map((drv) => (
+                  {standbyDrivers.slice(0, 6).map((drv) => (
                     <span 
                       key={drv.driverId || drv.fullName}
                       className={`driver-pill ${driverName === drv.fullName ? 'active-pill' : ''}`}
@@ -736,29 +758,38 @@ const ExploreBookingModal = ({ booking, onClose }) => {
                   </div>
                 </div>
 
-                {/* 3. DRIVER ID (AUTO-GENERATED / STARTING WITH DENO-DRV-0000001: LOCKED) */}
+                {/* 3. DRIVER ID (EDITABLE / AUTO-GENERATED) */}
                 <div className="form-field-wrapper">
                   <div className="field-label-row">
                     <label className="field-label">
-                      <Lock size={14} className="text-dim-gold" /> DRIVER ID <span className="locked-tag">(LOCKED)</span>
+                      <ShieldCheck size={14} className="text-gold" /> DRIVER ID / REGISTRY CODE
                     </label>
-                    <span className="field-auto-tag">Starts with DENO-DRV-0000001</span>
+                    <button
+                      type="button"
+                      className="btn-auto-gen-id"
+                      onClick={() => {
+                        const randNum = String(Math.floor(1 + Math.random() * 9999999)).padStart(7, '0');
+                        setDriverId(`DENO-DRV-${randNum}`);
+                      }}
+                      title="Generate new Driver ID format"
+                    >
+                      <Sparkles size={11} /> Auto Gen ID
+                    </button>
                   </div>
-                  <div className="field-input-box locked-driver-id-box" title="Driver ID starts with DENO-DRV-0000001 and is Locked">
+                  <div className="field-input-box driver-id-input-box" title="Driver Registry ID">
                     <CheckCircle2 size={16} className="text-emerald check-icon-prefix" />
                     <input
                       type="text"
                       value={driverId}
-                      readOnly={true}
-                      tabIndex={-1}
-                      className="field-text-input monospace non-editable-blocked-input"
+                      onChange={(e) => setDriverId(e.target.value)}
+                      placeholder="e.g. DENO-DRV-0000001"
+                      className="field-text-input monospace editable-driver-id"
+                      title="Driver Registration ID"
+                      required
                     />
-                    <div className="locked-badge-pill">
-                      <Lock size={12} /> Auto-Locked
-                    </div>
                   </div>
                   <span className="field-micro-hint">
-                    Auto-generated based on Class A heavy driver certification registry (Non-editable)
+                    Official registry code • Starting format DENO-DRV-0000001 (Fully editable)
                   </span>
                 </div>
 
@@ -924,14 +955,42 @@ const ExploreBookingModal = ({ booking, onClose }) => {
                     </button>
                   </div>
 
-                  <button
-                    type="button"
-                    className="btn-cancel-hire-action"
-                    onClick={handleCancelHire}
-                  >
-                    <X size={15} />
-                    <span>Cancel Hire</span>
-                  </button>
+                  <div className="secondary-actions-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                      type="button"
+                      className="btn-cancel-hire-action"
+                      onClick={handleCancelHire}
+                      style={{ flex: 1 }}
+                    >
+                      <X size={15} />
+                      <span>Cancel Hire</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="btn-delete-hire-modal"
+                      onClick={handleDeleteBooking}
+                      title="Permanently remove this booking from database"
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.15)',
+                        border: '1px solid rgba(239, 68, 68, 0.35)',
+                        color: '#ef4444',
+                        padding: '10px 16px',
+                        borderRadius: '8px',
+                        fontWeight: '700',
+                        fontSize: '0.82rem',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '6px',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <Trash2 size={15} />
+                      <span>Delete</span>
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>

@@ -25,23 +25,26 @@ const SuperAdminLogin = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
     setIsLoading(true);
 
-    setTimeout(() => {
-      const result = loginSuperAdmin(email, password);
+    try {
+      const result = await loginSuperAdmin(email, password);
       setIsLoading(false);
-      if (!result.success) {
-        setErrorMessage(result.error);
+      if (!result || !result.success) {
+        setErrorMessage(result?.error || 'Invalid credentials. Please verify your email and password.');
       }
-    }, 450);
+    } catch (err) {
+      setIsLoading(false);
+      setErrorMessage(err.message || 'Authentication error. Please try again.');
+    }
   };
 
   const handleQuickFill = () => {
-    setEmail(adminCredentials.email);
-    setPassword(adminCredentials.password);
+    setEmail(adminCredentials.email || 'wdinushac@gmail.com');
+    setPassword(adminCredentials.password || 'Dinu_@1996');
     setErrorMessage('');
   };
 
@@ -107,6 +110,25 @@ const SuperAdminLogin = () => {
               <label className="deno-admin-label">
                 <Lock size={15} /> Super Admin Password
               </label>
+              <button
+                type="button"
+                className="deno-admin-quick-fill-btn"
+                onClick={handleQuickFill}
+                title="Quick Fill Master Credentials"
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#ffb800',
+                  fontSize: '0.74rem',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontWeight: '600'
+                }}
+              >
+                <Sparkles size={12} /> Auto Fill
+              </button>
             </div>
             <div className="deno-admin-input-field">
               <input

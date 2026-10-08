@@ -1,9 +1,23 @@
 import express from 'express';
-import { getAllDrivers, getStandbyDrivers } from '../controllers/driverController.js';
+import {
+  getAllDrivers,
+  getStandbyDrivers,
+  createDriver,
+  updateDriver,
+  deleteDriver
+} from '../controllers/driverController.js';
 
 const router = express.Router();
 
-router.get('/', getAllDrivers);
+router.route('/')
+  .get(getAllDrivers)
+  .post(createDriver);
+
 router.get('/standby', getStandbyDrivers);
 
+router.route('/:id')
+  .put(updateDriver)
+  .delete(deleteDriver);
+
 export default router;
+
